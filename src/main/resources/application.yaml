@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: LostIn-Auth
+  config:
+    import: dotenv:./.env
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lostinauth
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+  profiles:
+    active: dev
