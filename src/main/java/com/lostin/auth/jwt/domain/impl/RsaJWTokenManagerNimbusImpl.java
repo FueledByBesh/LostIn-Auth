@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -83,7 +84,7 @@ public class RsaJWTokenManagerNimbusImpl implements RsaJWTokenManager {
 
 
     @Override
-    public boolean validateToken(JWToken token) throws InvalidTokenException {
+    public void validateToken(JWToken token) throws InvalidTokenException {
         SignedJWT signedJWT;
         try {
             signedJWT = SignedJWT.parse(token.value());
@@ -101,11 +102,31 @@ public class RsaJWTokenManagerNimbusImpl implements RsaJWTokenManager {
         }
         RSASSAVerifier verifier = new RSASSAVerifier(optionalKey.get().getPublicKeyObject());
         try {
-            return signedJWT.verify(verifier);
+            if(!signedJWT.verify(verifier)){
+                throw new InvalidTokenException("Invalid signature");
+            }
         }catch (JOSEException e) {
             log.warn("Smth Strange happened: Error verifying token",e);
             throw new InvalidTokenException("Error verifying token");
         }
+
+        try {
+            JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+            Date expireDate = claimsSet.getExpirationTime();
+            if(Objects.isNull(expireDate)){
+                log.warn("Token expire time not provided");
+                throw new InvalidTokenException("Invalid Token: token expire time not provided");
+            }
+
+            if(expireDate.before(new Date())){
+                throw new InvalidTokenException("Token expired");
+            }
+
+        }catch (ParseException e){
+            log.warn("Smth Strange happened: Error parsing claims",e);
+            throw new InvalidTokenException("Error parsing claims");
+        }
+
     }
 
     private JWSAlgorithm algorithmMapper(String algorithm) {
