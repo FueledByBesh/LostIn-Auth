@@ -12,7 +12,7 @@ import java.util.UUID;
 public class TokenProxy {
 
     private UUID id;
-    private String value;
+    private String valueHash;
     private String subject;
     private String issuer;
     private String audience;

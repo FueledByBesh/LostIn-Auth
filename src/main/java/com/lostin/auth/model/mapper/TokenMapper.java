@@ -10,7 +10,7 @@ public class TokenMapper {
     public TokenEntity toEntity(TokenProxy proxy){
         return TokenEntity.builder()
                 .id(proxy.getId())
-                .value(proxy.getValue())
+                .value(proxy.getValueHash())
                 .subject(proxy.getSubject())
                 .issuer(proxy.getIssuer())
                 .audience(proxy.getAudience())
@@ -24,7 +24,7 @@ public class TokenMapper {
     public TokenProxy toProxy(TokenEntity entity){
         return TokenProxy.builder()
                 .id(entity.getId())
-                .value(entity.getValue())
+                .valueHash(entity.getValue())
                 .subject(entity.getSubject())
                 .issuer(entity.getIssuer())
                 .audience(entity.getAudience())

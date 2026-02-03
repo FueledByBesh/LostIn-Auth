@@ -56,7 +56,7 @@ public class TokenService {
         Instant now = Instant.now();
         Instant expTime = now.plus(REFRESH_TOKEN_TTL_HOURS, ChronoUnit.HOURS);
         TokenProxy proxy = TokenProxy.builder()
-                .value(refTokenHash)
+                .valueHash(refTokenHash)
                 .subject(userId.toString())
                 .issuer("auth-service")
                 .audience(audience)
@@ -71,7 +71,8 @@ public class TokenService {
     }
 
     public AccessToken refreshClientToken(RefreshToken refreshToken) throws InvalidTokenException{
-        Optional<TokenProxy> optionalTokenProxy = tokenRepository.findTokenByValue(refreshToken.value());
+        String hashedToken = Hasher.sha256(refreshToken.value());
+        Optional<TokenProxy> optionalTokenProxy = tokenRepository.findTokenByValueHash(hashedToken);
         if(optionalTokenProxy.isEmpty()){
             throw new InvalidTokenException("Invalid refresh token!");
         }
@@ -81,7 +82,7 @@ public class TokenService {
 
     private AccessToken generateClientAccessToken(TokenProxy proxy){
         ClientJwtMetadata metadata = ClientJwtMetadata.builder()
-                .tokenId(proxy.getValue())
+                .tokenId(proxy.getValueHash())
                 .subject(proxy.getSubject())
                 .issuer(proxy.getIssuer())
                 .audience(proxy.getAudience())

@@ -21,14 +21,12 @@ public class TokenRepoJpaImpl implements TokenRepository {
 
     @Override
     public Optional<TokenProxy> findTokenById(UUID tokenId) {
-        //todo
-        return Optional.empty();
+        return tokenJpaRepo.findById(tokenId).map(mapper::toProxy);
     }
 
     @Override
-    public Optional<TokenProxy> findTokenByValue(String value) {
-        //todo
-        return Optional.empty();
+    public Optional<TokenProxy> findTokenByValueHash(String value) {
+        return tokenJpaRepo.findByValue(value).map(mapper::toProxy);
     }
 
     @Override
