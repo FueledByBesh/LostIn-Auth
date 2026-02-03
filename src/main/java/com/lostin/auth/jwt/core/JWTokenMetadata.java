@@ -19,51 +19,41 @@ import java.util.Set;
 @Slf4j
 @SuperBuilder
 @Getter
-public abstract class JWTokenMetadata{
+public class JWTokenMetadata{
 
-    @NotNull(message = "Token id is required")
     @NotBlank(message = "Token id is required")
     private String tokenId;
-    @NotNull(message = "Subject is required")
     @NotBlank(message = "Subject is required")
     private String subject;
-    @NotNull(message = "Issuer is required")
     @NotBlank(message = "Issuer is required")
     private String issuer;
-    @NotNull(message = "Audience is required")
     @NotBlank(message = "Audience is required")
     private String audience;
+    @NotNull(message = "Expires after is required")
     @Positive(message = "Seconds cannot be negative")
     @Min(value = 30,message = "Expires after must be greater or equal than 30 seconds")
     private Long expiresAfter;
 
-    private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    private static Validator validator = factory.getValidator();
+    protected static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    protected static Validator validator = factory.getValidator();
 
-    public JWTokenMetadata(
-            String tokenId,
-            String subject,
-            String issuer,
-            String audience,
-            Long expiresAfter
-    ){
-        this.tokenId = tokenId;
-        this.subject = subject;
-        this.issuer = issuer;
-        this.audience = audience;
-        this.expiresAfter = expiresAfter;
-        Set<ConstraintViolation<JWTokenMetadata>> violations = validator.validate(this);
-        if (!violations.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (ConstraintViolation<JWTokenMetadata> violation : violations) {
-                sb.append(violation.getMessage()).append("; ");
-            }
-            log.error("Token metadata validation failed: {}",sb);
-            throw new ServerError();
-        }
-    }
-
+    /**
+     * @return Immutable default claim map
+     */
     public Map<String, Object> getClaimMap(){
         return Map.of("jti",tokenId,"sub",subject,"iss",issuer,"aud",audience);
+    }
+
+    public Set<ConstraintViolation<JWTokenMetadata>> violations(){
+        return validator.validate(this);
+    }
+    public void validate(){
+        if(violations().isEmpty()) return;
+        StringBuilder sb = new StringBuilder("Validation error: ");
+        violations().forEach(violation ->
+            sb.append(violation.getMessage()).append("; ")
+        );
+        log.error(sb.toString());
+        throw new ServerError();
     }
 }

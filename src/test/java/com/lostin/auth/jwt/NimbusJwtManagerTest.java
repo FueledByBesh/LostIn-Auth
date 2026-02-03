@@ -26,8 +26,10 @@ public class NimbusJwtManagerTest {
                 .issuer("test-issuer")
                 .audience("test-audience")
                 .expiresAfter(60L) // 1 minute
+                .scopes("Scope")
                 .build();
 
+        metadata.validate();
         JWToken token = tokenManager.generateAndSign(metadata);
         assert token != null;
         System.out.println(token.value());
