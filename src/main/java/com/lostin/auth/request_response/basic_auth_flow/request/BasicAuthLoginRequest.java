@@ -1,20 +1,25 @@
 package com.lostin.auth.request_response.basic_auth_flow.request;
 
+import com.lostin.auth.exception.BadRequestException;
+import com.lostin.auth.model.core.user.Email;
+import com.lostin.auth.model.core.user.Password;
 import jakarta.validation.constraints.*;
 
 public record BasicAuthLoginRequest(
-        @NotNull(message = "Email is required")
-        @NotBlank(message = "Email is required")
-        @Email(message = "Invalid email")
-        String email,
-
-        @NotNull(message = "Password is required")
-        @NotBlank(message = "Password is required")
-        @Size(min = 8,max = 20,message = "Password must be between 8 and 20 characters")
-        @Pattern(
-                regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$",
-                message = "Password must contain at least one number, one uppercase letter, one lowercase letter and one symbol"
-        )
-        String password
+        Email email,
+        Password password
 ) {
+    public BasicAuthLoginRequest(
+            Email email,
+            Password password
+    ) {
+        this.email = email;
+        this.password = password;
+        StringBuilder violations = new StringBuilder();
+        email.getViolations().ifPresent(violations::append);
+        password.getViolations().ifPresent(violations::append);
+        if (!violations.isEmpty()) {
+            throw new BadRequestException("REQUEST_VALIDATION_ERROR", violations.toString());
+        }
+    }
 }

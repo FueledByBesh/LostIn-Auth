@@ -1,6 +1,7 @@
 package com.lostin.auth.controller;
 
 
+import com.lostin.auth.request_response.basic_auth_flow.BasicAuthRegisterRequest;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthLoginRequest;
 import com.lostin.auth.service.BasicAuthService;
 import jakarta.validation.Valid;
@@ -33,15 +34,20 @@ public class BasicAuthController {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Login not implemented yet");
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(
+            @RequestBody BasicAuthRegisterRequest request
+    ) {
+        return ResponseEntity.ok("User Registered");
+    }
+
     @PostMapping("/logout")
     public String logout() {
         return "logout";
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody String string) {
-        return ResponseEntity.ok("User Registered");
-    }
+
+
 
 
 }

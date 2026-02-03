@@ -1,10 +1,10 @@
 package com.lostin.auth.model.entity;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -15,9 +15,11 @@ import java.util.UUID;
 public class UserCredentials {
 
     @Id
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
-
-    @NotNull
+    @Column(name = "password_hash",nullable = false)
     private String passwordHash;
+
+//    private Boolean twoFactorEnabled = false;
 
 }

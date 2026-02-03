@@ -4,35 +4,35 @@ import com.lostin.auth.exception.ValidationException;
 import com.lostin.auth.util.interfaces.Validatable;
 import com.lostin.auth.util.validator.JakartaValidator;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
-public record UserId(
-        @NotNull(message = "User ID is required")
-        UUID value
+public record Username(
+        @NotBlank(message = "Username is required")
+        @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
+        String value
 ) implements Validatable {
+
+
     @Override
     public void validate() throws ValidationException {
         getViolations().ifPresent(value -> {
-            throw new ValidationException("USER_ID_VALIDATION_ERROR", value);
+            throw new ValidationException("USERNAME_VALIDATION_ERROR", value);
         });
     }
 
     @Override
     public Optional<String> getViolations() {
-        Set<ConstraintViolation<UserId>> violations = JakartaValidator.validator().validate(this);
+        Set<ConstraintViolation<Username>> violations = JakartaValidator.validator().validate(this);
         if (violations.isEmpty()) return Optional.empty();
-        StringBuilder sb = new StringBuilder();
-        violations.forEach(violation -> sb.append(violation.getMessage()).append("; "));
-        return Optional.of(sb.toString());
-    }
 
-    public static UserId validated(UUID value) throws ValidationException {
-        UserId userId = new UserId(value);
-        userId.validate();
-        return userId;
+        StringBuilder sb = new StringBuilder();
+        for (ConstraintViolation<Username> violation : violations) {
+            sb.append(violation.getMessage()).append("; ");
+        }
+        return Optional.of(sb.toString());
     }
 }

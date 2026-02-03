@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(401).body(e.toErrorResponse());
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<@NonNull ErrorResponse> handleBadRequestException(BadRequestException e){
+        return ResponseEntity.badRequest().body(e.toErrorResponse());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<@NonNull ErrorResponse> handleValidationException(MethodArgumentNotValidException e){
         return ResponseEntity.badRequest().body(new ErrorResponse("VALIDATION_ERROR",e.getMessage()));
