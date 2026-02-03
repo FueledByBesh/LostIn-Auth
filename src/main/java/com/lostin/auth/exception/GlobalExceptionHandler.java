@@ -1,5 +1,6 @@
 package com.lostin.auth.exception;
 
+import com.lostin.auth.jwt.exception.InvalidTokenException;
 import com.lostin.auth.request_response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -15,6 +16,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServiceResponseException.class)
     public ResponseEntity<@NonNull ErrorResponse> handleServerException(ServiceResponseException e){
         return ResponseEntity.status(e.statusCode).body(e.toErrorResponse());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<@NonNull ErrorResponse> handleInvalidTokenException(InvalidTokenException e){
+        return ResponseEntity.status(401).body(e.toErrorResponse());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

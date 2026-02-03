@@ -1,5 +1,6 @@
 package com.lostin.auth.repository.impl;
 
+import com.lostin.auth.model.entity.TokenEntity;
 import com.lostin.auth.model.mapper.TokenMapper;
 import com.lostin.auth.model.proxy.TokenProxy;
 import com.lostin.auth.repository.TokenRepository;
@@ -20,21 +21,24 @@ public class TokenRepoJpaImpl implements TokenRepository {
 
     @Override
     public Optional<TokenProxy> findTokenById(UUID tokenId) {
+        //todo
         return Optional.empty();
     }
 
     @Override
     public Optional<TokenProxy> findTokenByValue(String value) {
+        //todo
         return Optional.empty();
     }
 
     @Override
     public TokenProxy saveToken(TokenProxy token) {
-        return null;
+        TokenEntity entity = mapper.toEntity(token);
+        return mapper.toProxy(tokenJpaRepo.save(entity));
     }
 
     @Override
     public void deleteToken(UUID tokenId) {
-
+        tokenJpaRepo.deleteById(tokenId);
     }
 }

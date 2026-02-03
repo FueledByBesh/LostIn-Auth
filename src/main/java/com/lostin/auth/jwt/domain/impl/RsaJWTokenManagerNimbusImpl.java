@@ -38,11 +38,6 @@ public class RsaJWTokenManagerNimbusImpl implements RsaJWTokenManager {
 
     @Override
     public JWToken generateAndSign(JWTokenMetadata metadata) {
-        return this.generateWithCustomClaimsAndSign(metadata,null);
-    }
-
-    @Override
-    public JWToken generateWithCustomClaimsAndSign(JWTokenMetadata metadata, Map<String, Object> customClaims) {
         RsaJwk activeKey;
         Optional<RsaJwk> optionalActiveKey = keyManager.getActiveKey();
         if (optionalActiveKey.isEmpty()) {
@@ -53,19 +48,18 @@ public class RsaJWTokenManagerNimbusImpl implements RsaJWTokenManager {
         }
 
         Instant now = Instant.now();
-        Instant expTime = now.plus(metadata.expiresAfter(), ChronoUnit.SECONDS);
+        Instant expTime = now.plus(metadata.getExpiresAfter(), ChronoUnit.SECONDS);
 
         JWTClaimsSet.Builder claimBuilder = new JWTClaimsSet.Builder()
-                .jwtID(metadata.tokenId())
-                .subject(metadata.subject())
-                .issuer(metadata.issuer())
-                .audience(metadata.audience())
-                .issueTime(Date.from(now))
                 .expirationTime(Date.from(expTime));
 
-        if (customClaims != null && !customClaims.isEmpty()) {
-            customClaims.forEach(claimBuilder::claim);
+
+        Map<String, Object> claims = metadata.getClaimMap();
+        if(claims ==null || claims.isEmpty()) {
+            log.error("Claims map is empty!");
+            throw new ServerError();
         }
+        claims.forEach(claimBuilder::claim);
 
         JWTClaimsSet claimsSet = claimBuilder.build();
         JWSHeader header = new JWSHeader.Builder(algorithmMapper(activeKey.getAlgorithm()))

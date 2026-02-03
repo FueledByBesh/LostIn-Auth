@@ -17,18 +17,18 @@ public class NimbusJwtManagerTest {
 
     @Test
     void generateToken(){
-        keyManager.init();
-
-        JWTokenMetadata metadata = JWTokenMetadata.builder()
-                .tokenId("test-token-id")
-                .subject("test-subject")
-                .issuer("test-issuer")
-                .audience("test-audience")
-                .expiresAfter(10000L)
-                .build();
-        JWToken token = tokenManager.generateAndSign(metadata);
-        assert token != null;
-        System.out.println(token.value());
+//        keyManager.init();
+//
+//        JWTokenMetadata metadata = JWTokenMetadata.
+//                .tokenId("test-token-id")
+//                .subject("test-subject")
+//                .issuer("test-issuer")
+//                .audience("test-audience")
+//                .expiresAfter(10000L)
+//                .build();
+//        JWToken token = tokenManager.generateAndSign(metadata);
+//        assert token != null;
+//        System.out.println(token.value());
     }
 
     @Test

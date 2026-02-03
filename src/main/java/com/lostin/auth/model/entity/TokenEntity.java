@@ -1,8 +1,6 @@
 package com.lostin.auth.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
@@ -22,12 +20,20 @@ import java.util.UUID;
 public class TokenEntity {
 
     @Id
-    private UUID tokenId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    @Column(nullable = false, unique = true)
     private String value;
+    @Column(nullable = false)
     private String subject;
     private String issuer;
     private String audience;
+    @Column(name = "issued_at")
     private Instant issuedAt;
+    @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
+    @Column(name = "scopes",length = 1024)
+    private String scopes;
 
+    private Boolean revoked = false;
 }

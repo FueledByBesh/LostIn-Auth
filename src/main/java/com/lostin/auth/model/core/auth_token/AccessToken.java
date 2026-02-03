@@ -4,4 +4,9 @@ import com.lostin.auth.jwt.core.JWToken;
 
 public record AccessToken(
         JWToken value
-) {}
+) {
+
+    public static AccessToken from(JWToken value){
+        return new AccessToken(value);
+    }
+}
