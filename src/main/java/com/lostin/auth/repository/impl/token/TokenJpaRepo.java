@@ -1,4 +1,4 @@
-package com.lostin.auth.repository.impl;
+package com.lostin.auth.repository.impl.token;
 
 import com.lostin.auth.model.entity.TokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

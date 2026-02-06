@@ -46,8 +46,4 @@ public class BasicAuthController {
         return "logout";
     }
 
-
-
-
-
 }

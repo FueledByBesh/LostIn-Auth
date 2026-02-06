@@ -27,7 +27,7 @@ public class TokenEntity {
     @Column(nullable = false)
     private String subject;
     private String issuer;
-    private String audience;
+    private String audience; // clientId
     @Column(name = "issued_at")
     private Instant issuedAt;
     @Column(name = "expires_at", nullable = false)
