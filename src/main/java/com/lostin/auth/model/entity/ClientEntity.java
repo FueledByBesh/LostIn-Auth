@@ -34,15 +34,18 @@ public class ClientEntity {
     @Column(name = "id", updatable = false)
     private UUID id; ///client id
     private String secretHash; ///client secret hash
-    @Column(name = "redirect_uri", nullable = false)
+    @Column(name = "redirect_uri", nullable = false,length = 1024)
     private String redirectUri; /// client app's possible (allowed) to redirect URIs.
     @Enumerated(EnumType.STRING)
     private ClientType type;
     @Column(name = "require_pkce")
+    @Builder.Default
     private Boolean requirePkce = false;
     @Enumerated(EnumType.STRING)
     private ClientStatus status;
-    private Boolean trusted= false;
+    @Builder.Default
+    private Boolean trusted = false;
+    private String allowedScopes;
 
     /**
      * User account from where client app is created.

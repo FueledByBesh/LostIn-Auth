@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -15,11 +15,12 @@ public class ClientProxy {
 
     private UUID id;
     private String secretHash;
-    private List<String> redirectUris;
+    private Set<String> redirectUris;
     private ClientType type;
     private Boolean requirePkce;
     private Boolean trusted;
     private ClientStatus status;
+    private Set<String> allowedScopes;
 
     private UUID userId;
     private String name;

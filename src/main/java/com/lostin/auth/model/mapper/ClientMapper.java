@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ClientMapper {
@@ -19,6 +20,7 @@ public class ClientMapper {
                 .requirePkce(proxy.getRequirePkce())
                 .status(proxy.getStatus())
                 .trusted(proxy.getTrusted())
+                .allowedScopes(String.join(" ", proxy.getAllowedScopes()))
                 .userId(proxy.getUserId())
                 .name(proxy.getName())
                 .description(proxy.getDescription())
@@ -31,11 +33,12 @@ public class ClientMapper {
         return ClientProxy.builder()
                 .id(entity.getId())
                 .secretHash(entity.getSecretHash())
-                .redirectUris(Arrays.asList(entity.getRedirectUri().split(" ")))
+                .redirectUris((Arrays.stream(entity.getRedirectUri().split(" ")).collect(Collectors.toSet())))
                 .type(entity.getType())
                 .requirePkce(entity.getRequirePkce())
                 .status(entity.getStatus())
                 .trusted(entity.getTrusted())
+                .allowedScopes(Arrays.stream(entity.getAllowedScopes().split(" ")).collect(Collectors.toSet()))
                 .userId(entity.getUserId())
                 .name(entity.getName())
                 .description(entity.getDescription())

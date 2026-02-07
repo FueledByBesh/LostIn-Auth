@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -30,42 +31,11 @@ public class OAuthController {
      */
     @GetMapping("/authorize")
     public ResponseEntity<Void> authorize(
-            @RequestParam(name = "response_type") String responseType,
-            @RequestParam(name = "client_id") String clientId,
-            @RequestParam(name = "redirect_uri") String redirectUri,
-            @RequestParam(name = "scope") String scope,
-            @RequestParam(name = "state", required = false) String state
+            @RequestParam Map<String, String> params
     ) {
-        OAuthorizeRequest request;
-        //todo: check the redirect uri first, if its wrong return 400
-
-        try {
-            request = OAuthorizeRequest.builder()
-                    .responseType(ResponseType.valueOf(responseType))
-                    .clientId(clientId)
-                    .redirectUri(redirectUri)
-                    .scope(scope)
-                    .state(state)
-                    .build();
-        } catch (ValidationException e) {
-            URI location = UriComponentsBuilder
-                    .fromUriString(redirectUri)
-                    .queryParam("error","invalid_request")
-                    .queryParam("error_description",e.getMessage())
-                    .build(true).toUri();
-            return ResponseEntity
-                    .status(HttpStatus.FOUND)
-                    .location(location)
-                    .build();
-        }
-
-        URI nextLocation = oAuthService.authorize(request);
-
-        return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .location(nextLocation)
-                .build();
+        return oAuthService.authorize(params);
     }
+
 
     @PostMapping("/token")
     public ResponseEntity<String> getToken(
