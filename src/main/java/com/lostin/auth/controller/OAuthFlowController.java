@@ -45,6 +45,11 @@ public class OAuthFlowController {
         return null;
     }
 
+    /*
+        TODO:
+            Uses BasicAuthController endpoints for login.
+            if
+     */
     @GetMapping("/login-page")
     public String loginPage(
             @RequestParam(name = "fid") UUID flowId
@@ -52,18 +57,23 @@ public class OAuthFlowController {
         return "oauth_flow_page/login-page";
     }
 
-    @GetMapping("/login")
-    public String login(
+    @GetMapping("/register-page")
+    public String registerPage() {
+        return "oauth_flow_page/register-page";
+    }
+
+    /*
+        TODO:
+            1) Intermediate endpoint after login (or register) page and consent page
+            2) Saves user data in flow
+            3) Doesn't return page just redirects to next page
+     */
+    @GetMapping("/authenticate")
+    public String authenticate(
             @RequestParam(name = "fid") UUID flowId,
             @RequestParam(name = "remember_me",defaultValue = "false") boolean rememberMe // saves user session in browser
     ) {
-
         return null;
-    }
-
-    @GetMapping("/register-page")
-    public String registerPage() {
-        return "oauth_flow_page/register";
     }
 
     @GetMapping("/2mfa")
@@ -71,13 +81,13 @@ public class OAuthFlowController {
         return "oauth_flow_page/2mfa";
     }
 
-    @GetMapping("/consent")
+    @GetMapping("/consent-page")
     public String consent() {
-        return "oauth_flow_page/consent";
+        return "oauth_flow_page/consent-page";
     }
 
     @GetMapping("/error")
     public String error() {
-        return "oauth_flow_page/error";
+        return "oauth_flow_page/error-page";
     }
 }

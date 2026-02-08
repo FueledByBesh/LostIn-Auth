@@ -42,7 +42,6 @@ public class OAuthService {
     }
 
     /**
-     *
      * @param request metadata for OAuth flow
      * @return URI location to next step with OAuth flow id param
      */
@@ -50,6 +49,12 @@ public class OAuthService {
         return null;
     }
 
+    /*
+        TODO: authorize method shouldn't return ResponseEntity (its controllers job)
+            1) For future rewrite this method and find easier approach for validation
+            2) Define another Exception classes for OAuth requests (like OAuthAuthorizeException, OAuthRedirectException and etc)
+            and write handle methods for them in GlobalExceptionHandler
+     */
     public ResponseEntity<Void> authorize(Map<String,String> params){
         if(!params.containsKey("client_id")){
             throw new BadRequestException("INVALID_PARAMS","client_id is required");
