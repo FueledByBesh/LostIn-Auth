@@ -1,16 +1,16 @@
-package com.lostin.auth.model.proxy;
+package com.lostin.auth.model.core.oauth_flow;
 
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Builder
 public class CachedFlowClient {
-    private final String clientId;
+    private final UUID clientId;
     private final String secretHash;
-    private String authCode;
 
     private final String redirectUri;
     private final String state;
@@ -19,7 +19,7 @@ public class CachedFlowClient {
 
     private final boolean requirePkce;
     private final String codeChallenge;
-    private final String codeChallengeMethod;
+    private final CodeChallengeMethod codeChallengeMethod;
 
     // for consent page
     private final String appName;

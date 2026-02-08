@@ -1,4 +1,4 @@
-package com.lostin.auth.request_response.oauth_flow.enums;
+package com.lostin.auth.model.core.oauth_flow;
 
 import com.lostin.auth.exception.ValidationException;
 

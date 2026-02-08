@@ -1,25 +1,17 @@
 package com.lostin.auth.controller;
 
-import com.lostin.auth.exception.ValidationException;
-import com.lostin.auth.request_response.oauth_flow.enums.ResponseType;
-import com.lostin.auth.request_response.oauth_flow.request.OAuthorizeRequest;
 import com.lostin.auth.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth/v1/oauth2")
+@RequestMapping(name = "oauth2.0",path="/auth/v1/oauth2")
 public class OAuthController {
 
     private final OAuthService oAuthService;

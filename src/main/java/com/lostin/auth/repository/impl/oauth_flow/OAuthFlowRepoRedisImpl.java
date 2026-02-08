@@ -1,6 +1,7 @@
 package com.lostin.auth.repository.impl.oauth_flow;
 
-import com.lostin.auth.model.proxy.CachedFlowClient;
+import com.lostin.auth.model.core.oauth_flow.CachedFlow;
+import com.lostin.auth.model.core.oauth_flow.CachedFlowClient;
 import com.lostin.auth.repository.OAuthFlowRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -15,42 +16,42 @@ public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
 
     /**
      * creates new flow in cache
-     * @param client cached client
+     * @param flowClient cached flow client object
      * @return unique flow id of type {@link UUID}
      */
     @Override
-    public UUID persistFlow(CachedFlowClient client) {
+    public CachedFlow persistFlow(CachedFlowClient flowClient) {
         UUID flowId;
         do{
             flowId = UUID.randomUUID();
         }while (isFlowPresent(flowId));
-        this.saveFlow(flowId,client);
-        return flowId;
+        CachedFlow flow = CachedFlow.builder()
+                .flowId(flowId)
+                .client(flowClient)
+                .build();
+        saveFlow(flow);
+        return flow;
     }
 
     @Override
-    public void saveFlow(UUID flowId, CachedFlowClient client) {
-
+    public void saveFlow(CachedFlow flow) {
+        //todo
     }
 
     @Override
     public void deleteFlow(UUID flowId) {
-
+        //todo
     }
 
     @Override
-    public Optional<CachedFlowClient> getCachedClient(UUID flowId) {
+    public Optional<CachedFlow> getCachedFlow(UUID flowId) {
+        //todo
         return Optional.empty();
     }
 
     @Override
     public boolean isFlowPresent(UUID flowId) {
+        //todo
         return false;
     }
-
-//    @Override
-//    public UUID generateUniqueFlowId() {
-//        //todo
-//        return UUID.randomUUID();
-//    }
 }

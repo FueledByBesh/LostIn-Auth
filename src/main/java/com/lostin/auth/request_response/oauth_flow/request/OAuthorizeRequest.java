@@ -1,11 +1,8 @@
 package com.lostin.auth.request_response.oauth_flow.request;
 
-import com.lostin.auth.exception.BadRequestException;
-import com.lostin.auth.exception.ValidationException;
-import com.lostin.auth.request_response.oauth_flow.enums.ResponseType;
+import com.lostin.auth.model.core.oauth_flow.ResponseType;
 import lombok.Builder;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Builder

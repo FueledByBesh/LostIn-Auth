@@ -1,16 +1,16 @@
 package com.lostin.auth.repository;
 
-import com.lostin.auth.model.proxy.CachedFlowClient;
+import com.lostin.auth.model.core.oauth_flow.CachedFlow;
+import com.lostin.auth.model.core.oauth_flow.CachedFlowClient;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public interface OAuthFlowRepository {
 
-    UUID persistFlow(CachedFlowClient client);
-    void saveFlow(UUID flowId, CachedFlowClient client);
+    CachedFlow persistFlow(CachedFlowClient client);
+    void saveFlow(CachedFlow flow);
     void deleteFlow(UUID flowId);
-    Optional<CachedFlowClient> getCachedClient(UUID flowId);
+    Optional<CachedFlow> getCachedFlow(UUID flowId);
     boolean isFlowPresent(UUID flowId);
-//    UUID generateUniqueFlowId();
 }
