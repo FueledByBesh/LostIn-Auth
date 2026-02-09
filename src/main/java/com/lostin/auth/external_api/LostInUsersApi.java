@@ -4,6 +4,7 @@ import com.lostin.auth.model.core.user.UserId;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /*
@@ -18,8 +19,8 @@ public class LostInUsersApi {
     }
 
     //todo
-    public UserId findUserByEmail(String email){
-        return UserId.validated(UUID.randomUUID());
+    public Optional<UserId> findUserByEmail(String email){
+        return Optional.of(UserId.validated(UUID.randomUUID()));
     }
 
 

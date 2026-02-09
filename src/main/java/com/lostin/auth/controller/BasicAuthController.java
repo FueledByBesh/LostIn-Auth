@@ -1,6 +1,9 @@
 package com.lostin.auth.controller;
 
 
+import com.lostin.auth.exception.BadRequestException;
+import com.lostin.auth.exception.ValidationException;
+import com.lostin.auth.model.core.user.Email;
 import com.lostin.auth.request_response.basic_auth_flow.BasicAuthRegisterRequest;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthLoginRequest;
 import com.lostin.auth.service.BasicAuthService;
@@ -28,10 +31,12 @@ public class BasicAuthController {
     private final BasicAuthService basicAuthService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(
-            @Valid @RequestBody BasicAuthLoginRequest request
+    public ResponseEntity<Void> login(
+            @RequestBody BasicAuthLoginRequest request /// already validated
     ) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Login not implemented yet");
+        basicAuthService.login(request);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/register")
@@ -42,8 +47,22 @@ public class BasicAuthController {
     }
 
     @PostMapping("/logout")
-    public String logout() {
-        return "logout";
+    public ResponseEntity<Void> logout() {
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
+    @PostMapping("/login/validate-email")
+    public ResponseEntity<Void> validateEmail(
+            @RequestBody String email
+    ){
+        Email validatedEmail;
+        try {
+            validatedEmail = Email.validated(email);
+        }catch (ValidationException e){
+            throw new BadRequestException(e.getError(),e.getMessage());
+        }
+        basicAuthService.emailExists(validatedEmail);
+        return ResponseEntity.ok().build();
     }
 
 }

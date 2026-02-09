@@ -31,7 +31,7 @@ import java.util.UUID;
 public class ClientEntity {
 
     @Id
-    @Column(name = "id", updatable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id; ///client id
     private String secretHash; ///client secret hash
     @Column(name = "redirect_uri", nullable = false,length = 1024)
@@ -59,7 +59,7 @@ public class ClientEntity {
     private String description; /// client app's description
     @Column(name = "logo_uri")
     private String logoUri; /// client app's logo uri
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at",nullable = false, updatable = false)
     private Instant createdAt;
 
     @PrePersist

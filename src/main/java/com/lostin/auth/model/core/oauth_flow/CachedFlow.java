@@ -13,5 +13,4 @@ public class CachedFlow {
     private final UUID flowId;
     private final CachedFlowClient client;
     private CachedFlowUser user;
-    private String authCode;
 }

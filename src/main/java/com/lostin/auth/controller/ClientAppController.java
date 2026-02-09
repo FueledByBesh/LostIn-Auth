@@ -1,12 +1,12 @@
 package com.lostin.auth.controller;
 
-import com.lostin.auth.service.ClientAppService;
+import com.lostin.auth.request_response.client_service.request.CreateClientRequest;
+import com.lostin.auth.request_response.client_service.response.CreateClientResponse;
+import com.lostin.auth.service.ClientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller where user can create client apps
@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ClientAppController {
 
-    private final ClientAppService clientAppService;
+    private final ClientService clientService;
 
     /**
      * Gets user id from Access Token.
      * Creates a client app for a user
      */
     @PostMapping("/create-client")
-    public ResponseEntity<String> createClient(){
-        return null;
+    public ResponseEntity<CreateClientResponse> createClient(
+            @Valid @RequestBody CreateClientRequest request
+    ){
+        var response = clientService.createClientApp(request);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -34,6 +37,7 @@ public class ClientAppController {
      */
     @GetMapping("/get-clients")
     public ResponseEntity<String> getClients(){
+        //todo: not implemented
         return null;
     }
 
@@ -42,6 +46,7 @@ public class ClientAppController {
      */
     @PostMapping("/check-secret")
     public ResponseEntity<String> checkSecret(){
+        //todo: not implemented
         return null;
     }
 

@@ -1,8 +1,9 @@
 package com.lostin.auth.exception;
 
 import com.lostin.auth.request_response.ErrorResponse;
+import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-
+@Getter
 //@SuperBuilder
 public class ServerError extends RuntimeException {
 

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class UserService {
     }
 
     //todo
-    public UserId findUserByEmail(Email email){
+    public Optional<UserId> findUserByEmail(Email email){
         email.validate();
         return usersApi.findUserByEmail(email.value());
     }
