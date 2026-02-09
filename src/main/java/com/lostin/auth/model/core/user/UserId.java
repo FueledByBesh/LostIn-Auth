@@ -1,7 +1,7 @@
 package com.lostin.auth.model.core.user;
 
 import com.lostin.auth.exception.ValidationException;
-import com.lostin.auth.util.interfaces.Validatable;
+import com.lostin.auth.util.abstracts.Validatable;
 import com.lostin.auth.util.validator.JakartaValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.constraints.NotNull;
@@ -34,5 +34,15 @@ public record UserId(
         UserId userId = new UserId(value);
         userId.validate();
         return userId;
+    }
+
+    public static UserId validated(String value) throws ValidationException {
+        UUID id;
+        try {
+            id = UUID.fromString(value);
+        }catch (IllegalArgumentException e){
+            throw new ValidationException("USER_ID_VALIDATION_ERROR","Invalid user id: " + value);
+        }
+        return validated(id);
     }
 }

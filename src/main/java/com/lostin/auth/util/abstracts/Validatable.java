@@ -1,4 +1,4 @@
-package com.lostin.auth.util.interfaces;
+package com.lostin.auth.util.abstracts;
 
 import com.lostin.auth.exception.ValidationException;
 

@@ -1,4 +1,4 @@
-package com.lostin.auth.request_response.basic_auth_flow;
+package com.lostin.auth.request_response.basic_auth_flow.request;
 
 import com.lostin.auth.exception.BadRequestException;
 import com.lostin.auth.model.core.user.Email;

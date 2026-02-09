@@ -1,7 +1,7 @@
 package com.lostin.auth.model.core.user;
 
 import com.lostin.auth.exception.ValidationException;
-import com.lostin.auth.util.interfaces.Validatable;
+import com.lostin.auth.util.abstracts.Validatable;
 import com.lostin.auth.util.validator.JakartaValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.constraints.NotBlank;
