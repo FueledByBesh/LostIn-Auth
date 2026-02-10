@@ -20,4 +20,11 @@ public interface OAuthFlowRepository {
     void deleteFlow(UUID flowId);
     Optional<CachedFlow> getCachedFlow(UUID flowId);
     boolean isFlowPresent(UUID flowId);
+
+    /** Repo for auth code
+     *  Maybe in future it is a right option to take it out into another repository
+     */
+    void saveAuthCode(String code, UUID flowId);
+    UUID getFlowIdByAuthCode(String code);
+
 }

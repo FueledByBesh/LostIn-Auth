@@ -29,7 +29,7 @@ public class LostInUsersApi {
     /* TODO:
         write endpoint in users service that gives multiple users by its IDs
         Needed for SSO sessions (so if there are multiple sessions,
-        i don't have to users service multiple times)
+        there is no need to ask users service multiple times)
         return type should be List of minimal user data (username,email,logo uri)
      */
     public List<Void> findUsersByIds(List<UserId> userIds){

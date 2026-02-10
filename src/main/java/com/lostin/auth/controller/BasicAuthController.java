@@ -49,7 +49,7 @@ public class BasicAuthController {
             boolean authenticated = basicAuthService.login(request);
             if (!authenticated)
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new BasicAuthLoginResponse("UNAUTHORIZED!: Wrong Credentials"));
+                        .body(new BasicAuthLoginResponse("Wrong Credentials"));
             return ResponseEntity.ok(new BasicAuthLoginResponse("Authorized Successfully"));
         }catch (NotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BasicAuthLoginResponse("User not found"));

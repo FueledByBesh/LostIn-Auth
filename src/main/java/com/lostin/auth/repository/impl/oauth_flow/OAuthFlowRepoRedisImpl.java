@@ -53,4 +53,15 @@ public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
         //todo
         return false;
     }
+
+    @Override
+    public void saveAuthCode(String code, UUID flowId) {
+//        todo
+    }
+
+    @Override
+    public UUID getFlowIdByAuthCode(String code) {
+//        todo
+        return null;
+    }
 }

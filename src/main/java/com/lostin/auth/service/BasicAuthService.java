@@ -5,11 +5,11 @@ import com.lostin.auth.exception.AlreadyExistException;
 import com.lostin.auth.exception.NotFoundException;
 import com.lostin.auth.exception.ServerError;
 import com.lostin.auth.model.core.auth_token.RefreshToken;
-import com.lostin.auth.model.core.auth_token.Tokens;
 import com.lostin.auth.model.core.user.Email;
 import com.lostin.auth.model.core.user.UserId;
 import com.lostin.auth.model.proxy.UserCredentialsProxy;
 import com.lostin.auth.repository.Cache;
+import com.lostin.auth.repository.impl.cache.CachingOption;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthRegisterRequest;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthLoginRequest;
 import com.lostin.auth.util.Hasher;
@@ -34,7 +34,7 @@ public class BasicAuthService {
             - validate password
          */
         UserId userId = null;
-        Optional<UserId> optionalUserId = cache.get("email:userid-" + request.email().value())
+        Optional<UserId> optionalUserId = cache.get(CachingOption.USER_EMAIL_TO_ID, request.email().value())
                 .map(UserId::validated);
         userId = optionalUserId.orElseGet(
                 () -> userService.findUserByEmail(request.email()).orElseThrow(
@@ -75,7 +75,7 @@ public class BasicAuthService {
         UserId userId = userService.findUserByEmail(email).orElseThrow(
                 () -> new NotFoundException("USER_NOT_FOUND", "User with email " + email + " not found")
         );
-        cache.put("email:userid-" + email.value(), userId.value().toString(), 600); ///10 minutes in cache
+        cache.put(CachingOption.USER_EMAIL_TO_ID,email.value(), userId.value().toString(), 600); ///10 minutes in cache
     }
 
     /**

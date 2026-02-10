@@ -2,6 +2,7 @@ package com.lostin.auth.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,9 +53,15 @@ public class OAuthFlowController {
      */
     @GetMapping("/login-page")
     public String loginPage(
-            @RequestParam(name = "fid") UUID flowId
+            @RequestParam(name = "fid") UUID flowId,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "error", required = false) String errorMessage,
+            Model model
     ) {
-        return "oauth_flow_page/login-page";
+        model.addAttribute("flowId", flowId);
+        model.addAttribute("emailValue", email == null ? "" : email);
+        model.addAttribute("errorMessage", errorMessage);
+        return "oauth_flow_pages/login-page";
     }
 
     @GetMapping("/register-page")
@@ -68,8 +75,8 @@ public class OAuthFlowController {
             2) Saves user data in flow
             3) Doesn't return page just redirects to next page
      */
-    @GetMapping("/authenticate")
-    public String authenticate(
+    @GetMapping("/authenticated")
+    public String authenticated(
             @RequestParam(name = "fid") UUID flowId,
             @RequestParam(name = "remember_me",defaultValue = "false") boolean rememberMe // saves user session in browser
     ) {
