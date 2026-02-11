@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Approve access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-1: #f5f1e8;
+            --bg-2: #e9f1f7;
+            --ink: #1b1f2a;
+            --muted: #5d6774;
+            --accent: #2c6e8f;
+            --accent-strong: #1e5068;
+            --accent-soft: #d7e6ee;
+            --card: #ffffff;
+            --border: rgba(27, 31, 42, 0.12);
+            --shadow: 0 20px 50px rgba(27, 31, 42, 0.15);
+            --danger: #b3472f;
+            --focus: rgba(44, 110, 143, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 28px;
+            font-family: "Sora", sans-serif;
+            color: var(--ink);
+            background:
+                    radial-gradient(55% 45% at 10% 10%, rgba(255, 214, 170, 0.35), transparent 70%),
+                    radial-gradient(40% 35% at 90% 12%, rgba(171, 210, 240, 0.45), transparent 60%),
+                    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+        }
+
+        .card {
+            width: min(520px, 100%);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 32px 28px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: cardIn 0.6s ease-out;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -80px;
+            right: -60px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(44, 110, 143, 0.22), transparent 65%);
+            pointer-events: none;
+        }
+
+        .brand {
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin: 0 0 6px;
+        }
+
+        .subtitle {
+            margin: 0 0 18px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .app-card {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: #fbfcfd;
+            margin-bottom: 16px;
+        }
+
+        .app-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            object-fit: cover;
+            background: var(--accent-soft);
+        }
+
+        .app-meta {
+            display: grid;
+            gap: 6px;
+        }
+
+        .app-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .app-description {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .consent-box {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 16px;
+            background: #ffffff;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .actions {
+            display: grid;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        button {
+            border: none;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(30, 80, 104, 0.25);
+        }
+
+        .btn-deny {
+            background: #ffffff;
+            border: 1px solid rgba(179, 71, 47, 0.35);
+            color: var(--danger);
+        }
+
+        .btn-deny:hover {
+            box-shadow: 0 10px 20px rgba(179, 71, 47, 0.18);
+        }
+
+        .meta {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 14px;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 520px) {
+            .card {
+                padding: 26px 22px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .app-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .app-logo {
+                margin: 0 auto;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="card" th:attr="data-flow-id=${flowId}">
+        <div class="brand">LostIn Auth</div>
+        <h1>Approve access</h1>
+        <p class="subtitle">Review the permissions before continuing.</p>
+
+        <section class="app-card">
+            <img class="app-logo"
+                 th:src="${client != null and client.logoUri != null and !#strings.isEmpty(client.logoUri)
+                    ? client.logoUri
+                    : '/icon/blank-avatar.svg'}"
+                 alt="App logo">
+            <div class="app-meta">
+                <div class="app-name"
+                     th:text="${client != null and client.appName != null ? client.appName : 'Acme Workspace'}">Acme Workspace</div>
+                <div class="app-description"
+                     th:text="${client != null and client.description != null ? client.description : 'Mock description: Manage your team tasks, calendars, and shared files in one place.'}">
+                    Mock description: Manage your team tasks, calendars, and shared files in one place.
+                </div>
+            </div>
+        </section>
+
+        <div class="consent-box"
+             th:text="${consent != null and !#strings.isEmpty(consent)
+                ? consent
+                : 'Mock consent:\n• View your basic profile info (email, username).\n• Access your saved workspace settings.\n• Create and update tasks on your behalf.'}">
+            Mock consent text goes here.
+        </div>
+
+        <div class="actions">
+            <button id="acceptBtn" type="button">Accept</button>
+            <button id="denyBtn" class="btn-deny" type="button">Deny</button>
+        </div>
+
+        <p class="meta">You can revoke access later from your account settings.</p>
+    </main>
+
+    <script>
+        const card = document.querySelector(".card");
+        const flowId = card ? card.dataset.flowId : "";
+        const acceptBtn = document.getElementById("acceptBtn");
+        const denyBtn = document.getElementById("denyBtn");
+
+        const redirectWithDecision = (granted) => {
+            const params = new URLSearchParams({
+                fid: flowId,
+                "access-given": granted ? "true" : "false"
+            });
+            window.location.href = "/auth/v1/sign-in/authorize-client?" + params.toString();
+        };
+
+        acceptBtn.addEventListener("click", () => redirectWithDecision(true));
+        denyBtn.addEventListener("click", () => redirectWithDecision(false));
+    </script>
+</body>
+</html>

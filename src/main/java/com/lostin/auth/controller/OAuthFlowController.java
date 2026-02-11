@@ -1,5 +1,6 @@
 package com.lostin.auth.controller;
 
+import com.lostin.auth.dto.thymeleaf.Client;
 import com.lostin.auth.dto.thymeleaf.Session;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -59,7 +61,6 @@ public class OAuthFlowController {
             - takes session ids from cookies and validates them
             - Gets user profile (email,username,avatar_url) from user service
             - Puts into Model to render them in page using thymeleaf
-            -
          */
         model.addAttribute("flowId", flowId);
         return null;
@@ -112,12 +113,32 @@ public class OAuthFlowController {
     }
 
     @GetMapping("/consent-page")
-    public String consent() {
-        return "oauth_flow_page/consent-page";
+    public String consent(
+            @RequestParam(name = "fid") UUID flowId,
+            Model model
+    ) {
+        /* TODO:
+            - take client app profile from flow
+            - write consent text
+            - put consent text and client profile into model
+         */
+        Client aboutApp = null;
+        String consentText = "";
+
+        model.addAttribute("flowId", flowId);
+        model.addAttribute("client", aboutApp);
+        model.addAttribute("consent", consentText);
+
+        return "oauth_flow_pages/consent-page";
     }
 
-    @GetMapping("/error")
-    public String error() {
-        return "oauth_flow_page/error-page";
+    @GetMapping("/authorize-client")
+    public String authorizeClient(
+            @RequestParam(name = "fid") UUID flowId,
+            @RequestParam(name = "access-given") boolean accessGiven
+    ) {
+        /// Todo: Decides whether to give permission or not and redirects to required locaiton
+
+        return null;
     }
 }

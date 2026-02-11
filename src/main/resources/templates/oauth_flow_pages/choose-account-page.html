@@ -254,7 +254,7 @@
                     <img class="avatar"
                          th:src="${session.userAvatarUri} != null and !#strings.isEmpty(session.userAvatarUri)
                             ? ${session.userAvatarUri}
-                            : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDY0IDY0Ij48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIzMiIgZmlsbD0iI2Q3ZTZlZSIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMjYiIHI9IjEyIiBmaWxsPSIjYjdjN2QyIi8+PHBhdGggZD0iTTE2IDU0YzMtMTAgMTMtMTYgMTYtMTZzMTMgNiAxNiAxNiIgZmlsbD0iI2I3YzdkMiIvPjwvc3ZnPg=='"
+                            : '/icon/blank-avatar.svg'"
                          alt="Avatar">
                     <span class="session-details">
                         <span class="session-name" th:text="${session.username}">Username</span>
