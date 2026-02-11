@@ -107,7 +107,7 @@ public class BasicAuthController {
      * @param email email to check
      * @return code 200 (Ok) if email found and cached,
      *         code 404 (Not Found) if email not found,
-     *         code 401 (Bad Request) if email is invalid
+     *         code 400 (Bad Request) if email is invalid
      */
     @PostMapping("/login/validate-email")
     public ResponseEntity<Void> validateEmail(

@@ -192,7 +192,7 @@ public class OAuthService {
                 .build();
 
         CachedFlow flow = oAuthFlowRepository.persistFlow(cachedFlowClient);
-        String chooseAccountPageUri = APP_BASE_URL+"/auth/v1/signin/choose-account-page"; //todo: write choose account page uri
+        String chooseAccountPageUri = APP_BASE_URL+"/auth/v1/sign-in/choose-account-page";
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(UriComponentsBuilder.fromUriString(chooseAccountPageUri)
                         .queryParam("fid",flow.getFlowId().toString())

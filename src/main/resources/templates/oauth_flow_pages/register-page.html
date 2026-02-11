@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign in</title>
+    <title>Create account</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -119,12 +119,17 @@
             animation-delay: 0.16s;
         }
 
+        .field:nth-of-type(3) {
+            animation-delay: 0.24s;
+        }
+
         label {
             font-size: 13px;
             color: var(--muted);
         }
 
         input[type="email"],
+        input[type="text"],
         input[type="password"] {
             width: 100%;
             border-radius: 12px;
@@ -137,6 +142,7 @@
         }
 
         input[type="email"]:focus,
+        input[type="text"]:focus,
         input[type="password"]:focus {
             outline: none;
             border-color: var(--accent);
@@ -172,7 +178,7 @@
             opacity: 0;
             transform: translateY(10px);
             animation: fieldIn 0.6s ease forwards;
-            animation-delay: 0.24s;
+            animation-delay: 0.32s;
         }
 
         .checkbox {
@@ -194,7 +200,7 @@
             opacity: 0;
             transform: translateY(10px);
             animation: fieldIn 0.6s ease forwards;
-            animation-delay: 0.32s;
+            animation-delay: 0.4s;
         }
 
         button {
@@ -285,30 +291,39 @@
 <body>
     <main class="card">
         <div class="brand">LostIn Auth</div>
-        <h1>Sign in</h1>
-        <p class="subtitle">Use your email to continue this flow.</p>
+        <h1>Create account</h1>
+        <p class="subtitle">Sign up to continue this flow.</p>
 
         <div id="formError"
              class="alert"
              aria-live="polite"></div>
 
-        <form id="loginForm" class="form" novalidate th:attr="data-flow-id=${flowId}">
+        <form id="registerForm" class="form" novalidate th:attr="data-flow-id=${flowId}">
             <div class="field">
                 <label for="email">Email</label>
                 <input id="email"
                        name="email"
                        type="email"
-                       autocomplete="username"
+                       autocomplete="email"
                        placeholder="you@example.com">
                 <div id="emailStatus" class="field-hint" data-state="idle" aria-live="polite"></div>
+            </div>
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username"
+                       name="username"
+                       type="text"
+                       autocomplete="username"
+                       placeholder="Pick a username">
+                <div id="usernameStatus" class="field-hint" data-state="idle" aria-live="polite"></div>
             </div>
             <div class="field">
                 <label for="password">Password</label>
                 <input id="password"
                        name="password"
                        type="password"
-                       autocomplete="current-password"
-                       placeholder="Enter your password">
+                       autocomplete="new-password"
+                       placeholder="Create a password">
             </div>
 
             <div class="options">
@@ -320,27 +335,29 @@
             </div>
 
             <div class="actions">
-                <button id="submitBtn" type="submit">Continue</button>
+                <button id="submitBtn" type="submit">Create account</button>
             </div>
         </form>
 
         <p class="meta">
-            Your credentials are validated by the auth service.
-            <a th:href="@{/auth/v1/sign-in/register-page(fid=${flowId})}">Need an account? Register</a>
+            By creating an account you agree to continue this OAuth flow.
+            <a th:href="@{/auth/v1/sign-in/login-page(fid=${flowId})}">Already registered? Sign in</a>
         </p>
     </main>
 
     <script>
-        const form = document.getElementById("loginForm");
+        const form = document.getElementById("registerForm");
         const emailInput = document.getElementById("email");
+        const usernameInput = document.getElementById("username");
         const passwordInput = document.getElementById("password");
         const rememberMe = document.getElementById("rememberMe");
         const emailStatus = document.getElementById("emailStatus");
+        const usernameStatus = document.getElementById("usernameStatus");
         const errorBox = document.getElementById("formError");
         const submitBtn = document.getElementById("submitBtn");
 
         let lastValidatedEmail = "";
-        let emailValid = false;
+        let emailAvailable = false;
 
         const showError = (message) => {
             errorBox.textContent = message;
@@ -357,21 +374,44 @@
             emailStatus.textContent = message;
         };
 
+        const setUsernameStatus = (state, message) => {
+            usernameStatus.dataset.state = state;
+            usernameStatus.textContent = message;
+        };
+
+        const validateUsername = () => {
+            const username = usernameInput.value.trim();
+            if (!username) {
+                setUsernameStatus("error", "Username is required");
+                return false;
+            }
+            if (username.length < 3) {
+                setUsernameStatus("error", "Minimum 3 characters");
+                return false;
+            }
+            if (username.length > 20) {
+                setUsernameStatus("error", "Maximum 20 characters");
+                return false;
+            }
+            setUsernameStatus("ok", "Looks good");
+            return true;
+        };
+
         const validateEmail = async () => {
             const email = emailInput.value.trim();
             if (!email) {
-                emailValid = false;
+                emailAvailable = false;
                 setEmailStatus("idle", "");
                 return false;
             }
 
-            if (email === lastValidatedEmail && emailValid) {
+            if (email === lastValidatedEmail && emailAvailable) {
                 return true;
             }
 
-            setEmailStatus("pending", "Checking email...");
+            setEmailStatus("pending", "Checking availability...");
             try {
-                const response = await fetch("/api/v1/auth/login/validate-email", {
+                const response = await fetch("/api/v1/auth/register/email-available", {
                     method: "POST",
                     headers: {
                         "Content-Type": "text/plain"
@@ -380,16 +420,16 @@
                 });
 
                 if (response.ok) {
-                    emailValid = true;
+                    emailAvailable = true;
                     lastValidatedEmail = email;
-                    setEmailStatus("ok", "Email found");
+                    setEmailStatus("ok", "Email available");
                     return true;
                 }
 
-                emailValid = false;
+                emailAvailable = false;
                 lastValidatedEmail = email;
-                if (response.status === 404) {
-                    setEmailStatus("error", "Email not found");
+                if (response.status === 409) {
+                    setEmailStatus("error", "Email already in use");
                     return false;
                 }
 
@@ -401,14 +441,14 @@
                 setEmailStatus("error", "Unable to validate email");
                 return false;
             } catch (error) {
-                emailValid = false;
+                emailAvailable = false;
                 setEmailStatus("error", "Network error while validating");
                 return false;
             }
         };
 
         emailInput.addEventListener("input", () => {
-            emailValid = false;
+            emailAvailable = false;
             setEmailStatus("idle", "");
         });
 
@@ -416,35 +456,55 @@
             validateEmail();
         });
 
+        usernameInput.addEventListener("input", () => {
+            const username = usernameInput.value.trim();
+            if (!username) {
+                setUsernameStatus("idle", "");
+                return;
+            }
+            validateUsername();
+        });
+
+        usernameInput.addEventListener("blur", () => {
+            validateUsername();
+        });
+
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
             clearError();
 
             const email = emailInput.value.trim();
+            const username = usernameInput.value.trim();
             const password = passwordInput.value;
 
-            if (!email || !password) {
-                showError("Email and password are required.");
+            if (!email || !username || !password) {
+                showError("All fields are required.");
                 return;
             }
 
+            const usernameOk = validateUsername();
             const emailOk = await validateEmail();
             if (!emailOk) {
                 showError("Please check your email.");
                 return;
             }
+            if (!usernameOk) {
+                showError("Please check your username.");
+                return;
+            }
 
             submitBtn.disabled = true;
-            submitBtn.textContent = "Signing in...";
+            submitBtn.textContent = "Creating account...";
 
             try {
-                const response = await fetch("/api/v1/auth/login", {
+                const response = await fetch("/api/v1/auth/register", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         email: email,
+                        username: username,
                         password: password
                     })
                 });
@@ -454,11 +514,9 @@
                     data = await response.json();
                 } catch (error) {
                     data = null;
-                    showError("Network error. Please try again.");
                 }
 
-                if (response.ok) {
-                    clearError()
+                if (response.status === 201) {
                     const params = new URLSearchParams({
                         fid: form.dataset.flowId,
                         remember_me: rememberMe.checked ? "true" : "false"
@@ -469,13 +527,13 @@
 
                 const message = data && data.message
                     ? data.message
-                    : "Login failed (" + response.status + ")";
+                    : "Registration failed (" + response.status + ")";
                 showError(message);
             } catch (error) {
                 showError("Network error. Please try again.");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Continue";
+                submitBtn.textContent = "Create account";
             }
         });
     </script>
