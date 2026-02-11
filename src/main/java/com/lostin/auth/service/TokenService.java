@@ -94,13 +94,4 @@ public class TokenService {
     }
 
 
-    //todo
-//    public void revokeToken(RefreshToken refreshToken){
-////        tokenRepository.deleteToken(tokenId);
-//
-//    }
-
-
-
-
 }

@@ -9,8 +9,4 @@ import lombok.Getter;
 public class UserCredentialsProxy {
     private final UserId userId;
     private final String passwordHash;
-
-    public boolean validatePassword(String hashedPass){
-        return hashedPass.equals(passwordHash);
-    }
 }

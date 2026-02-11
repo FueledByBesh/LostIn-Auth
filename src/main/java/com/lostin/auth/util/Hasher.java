@@ -1,7 +1,6 @@
 package com.lostin.auth.util;
 
 import com.lostin.auth.exception.ServerError;
-import com.lostin.auth.model.core.user.Password;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,12 +25,6 @@ public class Hasher {
             log.error("Error hashing password: No such algorithm",e);
             throw new ServerError();
         }
-    }
-
-    @NonNull
-    public static String passwordHasher(@NonNull String plainPassword, @NonNull String salt){
-        //todo: password hashing using argon or smth else from spring security
-        return "null";
     }
 
 }
