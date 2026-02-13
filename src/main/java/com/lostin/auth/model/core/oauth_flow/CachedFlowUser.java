@@ -9,7 +9,4 @@ import java.util.UUID;
 @Builder
 public class CachedFlowUser {
     private final UUID userId;
-    private final String username;
-    private final String email;
-    private boolean rememberMe; /// for SSO
 }

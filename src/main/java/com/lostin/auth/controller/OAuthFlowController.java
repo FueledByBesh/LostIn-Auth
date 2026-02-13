@@ -1,7 +1,14 @@
 package com.lostin.auth.controller;
 
 import com.lostin.auth.dto.thymeleaf.Client;
-import com.lostin.auth.dto.thymeleaf.Session;
+//import com.lostin.auth.dto.thymeleaf.Session;
+import com.lostin.auth.exception.NotFoundException;
+import com.lostin.auth.model.core.oauth_flow.CachedFlowClient;
+import com.lostin.auth.model.core.user.UserId;
+import com.lostin.auth.repository.Cache;
+import com.lostin.auth.repository.impl.cache.CachingOption;
+import com.lostin.auth.service.OAuthFlowService;
+import com.lostin.auth.service.SSOSessionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,21 +16,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping(name = "oauth-flow", path = "/auth/v1/sign-in")
 public class OAuthFlowController {
 
     private final String APP_BASE_URL;
+    private final OAuthFlowService flowService;
+    private final SSOSessionService sessionService;
+    private final Cache cache;
 
     public OAuthFlowController(
-            @Value("${AUTH_APP_BASE_URL}") String APP_BASE_URL
+            @Value("${AUTH_APP_BASE_URL}") String APP_BASE_URL,
+            OAuthFlowService flowService,
+            SSOSessionService sessionService,
+            Cache cache
     ) {
         this.APP_BASE_URL = APP_BASE_URL;
+        this.flowService = flowService;
+        this.sessionService = sessionService;
+        this.cache = cache;
     }
 
     @GetMapping("/choose-account-page")
@@ -37,33 +50,24 @@ public class OAuthFlowController {
                 if there is session id validate them from SSOSessionRepository and cache them for quick access
                 if there is no session id or they're not validated redirect to login page
          */
-        List<Session> sessions = new ArrayList<>();
-        // there will be code for extracting session ids from cookies
-        if (!sessions.isEmpty()) {
-            model.addAttribute("flowId", flowId);
-            model.addAttribute("sessions", sessions);
-            return "oauth_flow_pages/choose-account-page";
-        } else {
-            return "redirect:" +
-                    APP_BASE_URL +
-                    "/auth/v1/sign-in" +
-                    "/login-page?fid=" + flowId;
-        }
+        return "redirect:" +
+                APP_BASE_URL +
+                "/auth/v1/sign-in" +
+                "/login-page?fid=" + flowId;
 
-    }
+//        Set<Session> sessions = new HashSet<>();
+//        // there will be code for extracting session ids from cookies
+//        if (!sessions.isEmpty()) {
+//            model.addAttribute("flowId", flowId);
+//            model.addAttribute("sessions", sessions);
+//            return "oauth_flow_pages/choose-account-page";
+//        } else {
+//            return "redirect:" +
+//                    APP_BASE_URL +
+//                    "/auth/v1/sign-in" +
+//                    "/login-page?fid=" + flowId;
+//        }
 
-    @GetMapping("/choose-account")
-    public String chooseAccount(
-            @RequestParam(name = "fid") UUID flowId,
-            Model model
-    ) {
-        /* Todo:
-            - takes session ids from cookies and validates them
-            - Gets user profile (email,username,avatar_url) from user service
-            - Puts into Model to render them in page using thymeleaf
-         */
-        model.addAttribute("flowId", flowId);
-        return null;
     }
 
     @GetMapping("/account-chosen")
@@ -102,18 +106,44 @@ public class OAuthFlowController {
     @GetMapping("/authenticated")
     public String authenticated(
             @RequestParam(name = "fid") UUID flowId,
+            @RequestParam(name = "token") String idToken,
             @RequestParam(name = "remember_me", defaultValue = "false") boolean rememberMe // saves user session in browser
     ) {
-        return null;
+        Optional<String> optionalUid = cache.get(CachingOption.OPAQUE_TOKEN_TO_UID,idToken);
+        if(optionalUid.isEmpty()) {
+            return "redirect:" +
+                    APP_BASE_URL +
+                    "/auth/v1/sign-in/error-page";
+        }
+
+        UserId userIdValidated = UserId.validated(optionalUid.get());
+        // saves user in flow
+        try {
+            flowService.saveUserIntoFlow(flowId, userIdValidated);
+        }catch (NotFoundException e){
+            return "redirect:" +
+                    APP_BASE_URL +
+                    "/auth/v1/sign-in/error-page";
+        }
+        if(rememberMe) {
+            UUID sessionId = sessionService.saveSession(userIdValidated);
+            //TODO: Save sessionId in cookies
+        }
+
+        // redirects to consent page
+        return "redirect:" +
+                APP_BASE_URL +
+                "/auth/v1/sign-in/consent-page?" +
+                "fid=" + flowId;
     }
 
     @GetMapping("/2mfa")
     public String twoFactorAuth() {
-        return "oauth_flow_page/2mfa";
+        return "not-implemented-yet";
     }
 
     @GetMapping("/consent-page")
-    public String consent(
+    public String consentPage(
             @RequestParam(name = "fid") UUID flowId,
             Model model
     ) {
@@ -122,9 +152,23 @@ public class OAuthFlowController {
             - write consent text
             - put consent text and client profile into model
          */
-        Client aboutApp = null;
-        String consentText = "";
+        Client aboutApp;
+        String consentText;
 
+        try {
+            CachedFlowClient client = flowService.getClient(flowId);
+            aboutApp = Client.builder()
+                    .appName(client.getAppName())
+                    .description(client.getAppDescription())
+                    .logoUri(client.getAppLogoUri())
+                    .build();
+
+            consentText = generateConsentText(client);
+        } catch (NotFoundException e){
+            return "redirect:" +
+                    APP_BASE_URL +
+                    "/auth/v1/sign-in/error-page";
+        }
         model.addAttribute("flowId", flowId);
         model.addAttribute("client", aboutApp);
         model.addAttribute("consent", consentText);
@@ -135,10 +179,29 @@ public class OAuthFlowController {
     @GetMapping("/authorize-client")
     public String authorizeClient(
             @RequestParam(name = "fid") UUID flowId,
-            @RequestParam(name = "access-given") boolean accessGiven
+            @RequestParam(name = "granted") boolean granted
     ) {
-        /// Todo: Decides whether to give permission or not and redirects to required locaiton
-
+        /// Todo: Decides whether to give permission or not and redirects to required location
+        System.out.println(flowId);
+        System.out.println(granted);
         return null;
+    }
+
+    @GetMapping("/error-page")
+    public String errorPage(){
+        return "oauth_flow_pages/error-page";
+    }
+
+    private String generateConsentText(CachedFlowClient client){
+        String text = """
+                Client app %s wants to access your account.
+                
+                It will be able to:
+                """.formatted(client.getAppName());
+        StringBuilder sb = new StringBuilder(text);
+        client.getScopes().forEach(scope -> sb.append("- ").append(scope).append("\n"));
+        sb.append("Will you give permission?");
+
+        return sb.toString();
     }
 }

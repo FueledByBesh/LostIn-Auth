@@ -4,6 +4,7 @@ import com.lostin.auth.jwt.exception.InvalidTokenException;
 import com.lostin.auth.request_response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,6 +27,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<@NonNull ErrorResponse> handleBadRequestException(BadRequestException e){
         return ResponseEntity.badRequest().body(e.toErrorResponse());
+    }
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<@NonNull ErrorResponse> handleUnAuthorizedException(UnAuthorizedException e){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.toErrorResponse());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<@NonNull ErrorResponse> handleNotFoundException(NotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.toErrorResponse());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<@NonNull ErrorResponse> handleConflictException(ConflictException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.toErrorResponse());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

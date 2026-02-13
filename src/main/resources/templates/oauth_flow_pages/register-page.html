@@ -291,7 +291,7 @@
 <body>
     <main class="card">
         <div class="brand">LostIn Auth</div>
-        <h1>Create account</h1>
+        <h1>Create an account</h1>
         <p class="subtitle">Sign up to continue this flow.</p>
 
         <div id="formError"
@@ -517,8 +517,14 @@
                 }
 
                 if (response.status === 201) {
+                    if(!data){
+                        showError("Something went wrong. Please try again.");
+                        return;
+                    }
+                    const token = data.token;
                     const params = new URLSearchParams({
                         fid: form.dataset.flowId,
+                        token: token,
                         remember_me: rememberMe.checked ? "true" : "false"
                     });
                     window.location.href = "/auth/v1/sign-in/authenticated?" + params.toString();

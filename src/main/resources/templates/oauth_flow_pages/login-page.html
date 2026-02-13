@@ -450,6 +450,7 @@
                 });
 
                 let data;
+
                 try {
                     data = await response.json();
                 } catch (error) {
@@ -458,9 +459,15 @@
                 }
 
                 if (response.ok) {
+                    if(!data){
+                        showError("Something went wrong. Please try again.");
+                        return;
+                    }
                     clearError()
+                    const token = data.token;
                     const params = new URLSearchParams({
                         fid: form.dataset.flowId,
+                        token: token,
                         remember_me: rememberMe.checked ? "true" : "false"
                     });
                     window.location.href = "/auth/v1/sign-in/authenticated?" + params.toString();

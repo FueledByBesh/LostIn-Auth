@@ -10,6 +10,7 @@ import com.lostin.auth.repository.Cache;
 import com.lostin.auth.repository.impl.cache.CachingOption;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthRegisterRequest;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthLoginRequest;
+import com.lostin.auth.util.OpaqueTokenGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,13 @@ public class BasicAuthService {
     private final Cache cache;
 
 
-    public boolean login(BasicAuthLoginRequest request) throws NotFoundException {
+    /**
+     *
+     * @param request email and password in {@link BasicAuthLoginRequest object wrapper}
+     * @return user id if login successful, otherwise empty
+     * @throws NotFoundException if user not found
+     */
+    public Optional<String> login(BasicAuthLoginRequest request) throws NotFoundException {
         /* done:
             - take user id from cache, if not found, fetch from user service
             - validate password
@@ -41,24 +48,32 @@ public class BasicAuthService {
         );
 
         try {
-            return credentialsService.validateCredentials(userId, request.password());
-        }catch (NotFoundException e){
-            log.error("User data conflict: User found in Users Service, but not found in Auth Service",e);
+            if (credentialsService.validateCredentials(userId, request.password())) {
+                String opaqueId = OpaqueTokenGenerator.generateOpaqueToken();
+                cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 300); /// 5 minutes
+                return Optional.of(opaqueId);
+            }
+            return Optional.empty();
+        } catch (NotFoundException e) {
+            log.error("User data conflict: User found in Users Service, but not found in Auth Service", e);
             throw new ServerError("User data conflict");
         }
 
     }
 
-    public void register(BasicAuthRegisterRequest request) throws AlreadyExistException {
+    public String register(BasicAuthRegisterRequest request) throws AlreadyExistException {
         UserId userId = userService.createUser(request.email(), request.username());
         credentialsService.createCredentials(userId, request.password());
+        String opaqueId = OpaqueTokenGenerator.generateOpaqueToken();
+        cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 300); /// 5 minutes
+        return opaqueId;
     }
 
-    public void findEmailAndCache(Email email) throws NotFoundException{
+    public void findEmailAndCache(Email email) throws NotFoundException {
         UserId userId = userService.findUserByEmail(email).orElseThrow(
                 () -> new NotFoundException("USER_NOT_FOUND", "User with email " + email + " not found")
         );
-        cache.put(CachingOption.USER_EMAIL_TO_ID,email.value(), userId.value().toString(), 600); ///10 minutes in cache
+        cache.put(CachingOption.USER_EMAIL_TO_ID, email.value(), userId.value().toString(), 600); ///10 minutes in cache
     }
 
     /**

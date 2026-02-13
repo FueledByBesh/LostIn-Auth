@@ -251,7 +251,7 @@
         const redirectWithDecision = (granted) => {
             const params = new URLSearchParams({
                 fid: flowId,
-                "access-given": granted ? "true" : "false"
+                granted: granted ? "true" : "false"
             });
             window.location.href = "/auth/v1/sign-in/authorize-client?" + params.toString();
         };
