@@ -41,8 +41,7 @@ public class OAuthFlowController {
 
     @GetMapping("/choose-account-page")
     public String chooseAccountPage(
-            @RequestParam(name = "fid") UUID flowId,
-            Model model
+            @RequestParam(name = "fid") UUID flowId
     ) {
         /*
             TODO:

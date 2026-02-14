@@ -2,12 +2,12 @@ spring:
   application:
     name: LostIn-Auth
   config:
-    import: dotenv:./.env
+    import: optional:file:.env[.properties]
 
   datasource:
     url: jdbc:postgresql://localhost:5432/lostinauth
-    username: postgres
-    password: postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -16,6 +16,13 @@ spring:
 
   profiles:
     active: dev
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
+
 
 server:
   port: 8080

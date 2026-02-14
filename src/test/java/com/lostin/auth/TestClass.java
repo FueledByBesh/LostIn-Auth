@@ -3,10 +3,7 @@ package com.lostin.auth;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestClass {
 
@@ -21,7 +18,8 @@ public class TestClass {
     }
     @Test
     void test2(){
-        System.out.println(Instant.now());
-        System.out.println(new Date());
+        UUID uuid = UUID.randomUUID();
+        System.out.println(uuid);
+        System.out.println(uuid.toString());
     }
 }

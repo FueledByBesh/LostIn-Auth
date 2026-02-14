@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -50,7 +51,7 @@ public class BasicAuthService {
         try {
             if (credentialsService.validateCredentials(userId, request.password())) {
                 String opaqueId = OpaqueTokenGenerator.generateOpaqueToken();
-                cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 300); /// 5 minutes
+                cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 5, TimeUnit.MINUTES);
                 return Optional.of(opaqueId);
             }
             return Optional.empty();
@@ -65,7 +66,7 @@ public class BasicAuthService {
         UserId userId = userService.createUser(request.email(), request.username());
         credentialsService.createCredentials(userId, request.password());
         String opaqueId = OpaqueTokenGenerator.generateOpaqueToken();
-        cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 300); /// 5 minutes
+        cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 5, TimeUnit.MINUTES);
         return opaqueId;
     }
 
@@ -73,7 +74,7 @@ public class BasicAuthService {
         UserId userId = userService.findUserByEmail(email).orElseThrow(
                 () -> new NotFoundException("USER_NOT_FOUND", "User with email " + email + " not found")
         );
-        cache.put(CachingOption.USER_EMAIL_TO_ID, email.value(), userId.value().toString(), 600); ///10 minutes in cache
+        cache.put(CachingOption.USER_EMAIL_TO_ID, email.value(), userId.value().toString(), 10,TimeUnit.MINUTES);
     }
 
     /**

@@ -35,5 +35,6 @@ public class TokenEntity {
     @Column(name = "scopes",length = 1024)
     private String scopes;
 
+    @Builder.Default
     private Boolean revoked = false;
 }

@@ -3,16 +3,22 @@ package com.lostin.auth.repository.impl.oauth_flow;
 import com.lostin.auth.model.core.oauth_flow.CachedFlow;
 import com.lostin.auth.model.core.oauth_flow.CachedFlowClient;
 import com.lostin.auth.repository.OAuthFlowRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+@RequiredArgsConstructor
 @Repository
 @Qualifier("redis-impl")
 public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
 
+    private final RedisTemplate<String,Object> redisTemplate;
+    private final String FLOW_PREFIX = "flow:";
 
     /**
      * creates new flow in cache
@@ -34,24 +40,24 @@ public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
 
     @Override
     public void saveFlow(CachedFlow flow) {
-        //todo
+        redisTemplate.opsForValue().set(flow.getFlowId().toString(),flow, 10, TimeUnit.MINUTES);
     }
 
     @Override
     public void deleteFlow(UUID flowId) {
-        //todo
+        redisTemplate.delete(FLOW_PREFIX+flowId);
     }
 
     @Override
     public Optional<CachedFlow> getCachedFlow(UUID flowId) {
-        //todo
+        redisTemplate.opsForValue().get(FLOW_PREFIX+flowId);
         return Optional.empty();
     }
 
     @Override
     public boolean isFlowPresent(UUID flowId) {
-        //todo
-        return false;
+        System.out.println(flowId);
+        return redisTemplate.hasKey(FLOW_PREFIX+flowId);
     }
 
     @Override
