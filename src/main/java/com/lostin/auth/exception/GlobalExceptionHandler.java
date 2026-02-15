@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -57,6 +58,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<@NonNull ErrorResponse> handleException(Exception e){
+        if(e instanceof HttpRequestMethodNotSupportedException){
+            log.info("Method not supported",e);
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse("METHOD_NOT_ALLOWED","Method not supported"));
+        }
         log.error("UNEXPECTED SERVER ERROR",e);
         return ResponseEntity.internalServerError().body(
                 new ErrorResponse("UNEXPECTED SERVER ERROR","Smth get wrong")

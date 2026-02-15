@@ -5,9 +5,9 @@ spring:
     import: optional:file:.env[.properties]
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/lostinauth
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5433/lostinauth
+    username: postgres
+    password: postgres
 
   jpa:
     hibernate:
@@ -21,8 +21,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-      password: ${REDIS_PASSWORD}
-
-
+#      password: ${REDIS_PASSWORD}
 server:
   port: 8080

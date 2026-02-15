@@ -44,6 +44,7 @@ public class BasicAuthController {
     public ResponseEntity<BasicAuthLoginResponse> login(
             @RequestBody BasicAuthLoginRequest request /// already validated
     ) {
+        request.validate();
         Optional<String> optionalIdToken = basicAuthService.login(request);
         if (optionalIdToken.isEmpty())
             throw new UnAuthorizedException("Wrong Credentials");
@@ -60,6 +61,7 @@ public class BasicAuthController {
     public ResponseEntity<BasicAuthRegisterResponse> registerUser(
             @RequestBody BasicAuthRegisterRequest request /// already validated
     ) {
+        request.validate();
         try {
             String token = basicAuthService.register(request);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -78,7 +80,7 @@ public class BasicAuthController {
      * @param email email to check
      * @return code 200 (Ok) if email not taken,
      * code 409 (Conflict) if email is already taken,
-     * code 401 (Bad Request) if email is invalid
+     * code 400 (Bad Request) if email is invalid
      */
     @PostMapping("/register/email-available")
     public ResponseEntity<Void> isEmailAvailable(
