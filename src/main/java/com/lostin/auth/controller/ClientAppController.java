@@ -5,6 +5,7 @@ import com.lostin.auth.request_response.client_service.response.CreateClientResp
 import com.lostin.auth.service.ClientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,20 @@ public class ClientAppController {
      * Gets user id from Access Token.
      * Creates a client app for a user
      */
-    @PostMapping("/create-client")
+    @PostMapping("/create")
     public ResponseEntity<CreateClientResponse> createClient(
             @Valid @RequestBody CreateClientRequest request
     ){
         var response = clientService.createClientApp(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/create/test")
+    public ResponseEntity<CreateClientRequest> testCreateClient(
+            @RequestBody CreateClientRequest request
+    ){
+//        var response = clientService.createClientApp(request);
+        return ResponseEntity.ok(request);
     }
 
     /**

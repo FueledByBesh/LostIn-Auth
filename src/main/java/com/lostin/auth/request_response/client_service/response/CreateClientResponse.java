@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.UUID;
 
 @Builder
-public class CreateClientResponse {
-    final UUID clientId;
-    final String clientSecret;
-}
+public record CreateClientResponse (
+        UUID clientId,
+        String clientSecret
+) {}

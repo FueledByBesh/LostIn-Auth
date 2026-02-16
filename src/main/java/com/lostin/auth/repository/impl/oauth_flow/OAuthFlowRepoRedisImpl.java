@@ -32,6 +32,7 @@ public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
             flowId = UUID.randomUUID();
         }while (isFlowPresent(flowId));
         CachedFlow flow = CachedFlow.builder()
+                .flowId(flowId)
                 .client(flowClient)
                 .build();
         saveFlow(flow);

@@ -27,19 +27,21 @@ public class ClientService {
         String hashedSecret = Hasher.sha256(secret);
         ClientProxy client = ClientProxy.builder()
                 .secretHash(hashedSecret)
-                .redirectUris(request.getRedirectUris())
-                .type(request.getType())
-                .requirePkce(request.getRequirePkce())
-                .trusted(request.getTrusted())
+                .redirectUris(request.redirectUris())
+                .type(request.type())
+                .requirePkce(request.requirePkce())
+                .trusted(request.trusted())
                 .status(ClientStatus.ACTIVE)
-                .allowedScopes(request.getAllowedScopes())
-                .userId(request.getUserId())
-                .name(request.getName())
-                .description(request.getDescription())
-                .logoUri(request.getLogoUri())
+                .allowedScopes(request.allowedScopes())
+                .userId(request.userId())
+                .name(request.name())
+                .description(request.description())
+                .logoUri(request.logoUri())
                 .build();
 
         client = clientRepository.save(client);
+        System.out.println(client.getId());
+        System.out.println(secret);
         return CreateClientResponse.builder()
                 .clientId(client.getId())
                 .clientSecret(secret)
