@@ -5,9 +5,11 @@ import com.lostin.auth.exception.*;
 import com.lostin.auth.model.core.user.Email;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthRegisterRequest;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthLoginRequest;
+import com.lostin.auth.request_response.basic_auth_flow.request.EmailRequest;
 import com.lostin.auth.request_response.basic_auth_flow.resopnse.BasicAuthLoginResponse;
 import com.lostin.auth.request_response.basic_auth_flow.resopnse.BasicAuthRegisterResponse;
 import com.lostin.auth.service.BasicAuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -42,9 +44,8 @@ public class BasicAuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<BasicAuthLoginResponse> login(
-            @RequestBody BasicAuthLoginRequest request /// already validated
+            @Valid @RequestBody BasicAuthLoginRequest request
     ) {
-        request.validate();
         Optional<String> optionalIdToken = basicAuthService.login(request);
         if (optionalIdToken.isEmpty())
             throw new UnAuthorizedException("Wrong Credentials");
@@ -59,9 +60,8 @@ public class BasicAuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<BasicAuthRegisterResponse> registerUser(
-            @RequestBody BasicAuthRegisterRequest request /// already validated
+            @Valid @RequestBody BasicAuthRegisterRequest request
     ) {
-        request.validate();
         try {
             String token = basicAuthService.register(request);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -77,45 +77,32 @@ public class BasicAuthController {
     }
 
     /**
-     * @param email email to check
      * @return code 200 (Ok) if email not taken,
      * code 409 (Conflict) if email is already taken,
      * code 400 (Bad Request) if email is invalid
      */
     @PostMapping("/register/email-available")
     public ResponseEntity<Void> isEmailAvailable(
-            @RequestBody String email
+            @Valid @RequestBody EmailRequest request
     ) {
-        Email validatedEmail;
-        try {
-            validatedEmail = Email.validated(email);
-        } catch (ValidationException e) {
-            throw new BadRequestException(e.getError(), e.getMessage());
-        }
-        if (basicAuthService.isEmailAvailable(validatedEmail)) {
+
+        if (basicAuthService.isEmailAvailable(new Email(request.email()))) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     /**
-     * @param email email to check
      * @return code 200 (Ok) if email found and cached,
      * code 404 (Not Found) if email not found,
      * code 400 (Bad Request) if email is invalid
      */
     @PostMapping("/login/validate-email")
     public ResponseEntity<Void> validateEmail(
-            @RequestBody String email
+            @Valid @RequestBody EmailRequest request
     ) {
-        Email validatedEmail;
         try {
-            validatedEmail = Email.validated(email);
-        } catch (ValidationException e) {
-            throw new BadRequestException(e.getError(), e.getMessage());
-        }
-        try {
-            basicAuthService.findEmailAndCache(validatedEmail);
+            basicAuthService.findEmailAndCache(new Email(request.email()));
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

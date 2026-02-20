@@ -10,14 +10,14 @@ public class UserCredentialsMapper {
 
     public UserCredentialsProxy toProxy(UserCredentialsEntity entity){
         return UserCredentialsProxy.builder()
-                .userId(UserId.validated(entity.getUserId()))
+                .userId(UserId.nullable(entity.getUserId()))
                 .passwordHash(entity.getPasswordHash())
                 .build();
     }
 
     public UserCredentialsEntity toEntity(UserCredentialsProxy proxy){
         return UserCredentialsEntity.builder()
-                .userId(proxy.getUserId().value())
+                .userId(proxy.getId())
                 .passwordHash(proxy.getPasswordHash())
                 .build();
     }

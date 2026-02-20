@@ -115,17 +115,18 @@ public class OAuthFlowController {
                     "/auth/v1/sign-in/error-page";
         }
 
-        UserId userIdValidated = UserId.validated(optionalUid.get());
+        UserId userId = UserId.from(optionalUid.get());
+
         // saves user in flow
         try {
-            flowService.saveUserIntoFlow(flowId, userIdValidated);
+            flowService.saveUserIntoFlow(flowId, userId);
         }catch (NotFoundException e){
             return "redirect:" +
                     APP_BASE_URL +
                     "/auth/v1/sign-in/error-page";
         }
         if(rememberMe) {
-            UUID sessionId = sessionService.saveSession(userIdValidated);
+            UUID sessionId = sessionService.saveSession(userId);
             //TODO: Save sessionId in cookies
         }
 

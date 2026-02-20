@@ -4,8 +4,11 @@ package com.lostin.auth.service;
 import com.lostin.auth.exception.AlreadyExistException;
 import com.lostin.auth.exception.NotFoundException;
 import com.lostin.auth.exception.ServerError;
+import com.lostin.auth.exception.ValidationException;
 import com.lostin.auth.model.core.user.Email;
+import com.lostin.auth.model.core.user.Password;
 import com.lostin.auth.model.core.user.UserId;
+import com.lostin.auth.model.core.user.Username;
 import com.lostin.auth.repository.Cache;
 import com.lostin.auth.repository.impl.cache.CachingOption;
 import com.lostin.auth.request_response.basic_auth_flow.request.BasicAuthRegisterRequest;
@@ -40,16 +43,21 @@ public class BasicAuthService {
             - validate password
          */
         UserId userId;
-        Optional<UserId> optionalUserId = cache.get(CachingOption.USER_EMAIL_TO_ID, request.email().value())
-                .map(UserId::validated);
+        Optional<UserId> optionalUserId;
+        try {
+            optionalUserId = cache.get(CachingOption.USER_EMAIL_TO_ID, request.email()).map(UserId::from);
+        }catch (ValidationException e){
+            log.warn("Invalid user Id in cache for email: {}",request.email(),e);
+            optionalUserId = Optional.empty();
+        }
         userId = optionalUserId.orElseGet(
-                () -> userService.findUserByEmail(request.email()).orElseThrow(
+                () -> userService.findUserByEmail(new Email(request.email())).orElseThrow(
                         () -> new NotFoundException("USER_NOT_FOUND", "User with email " + request.email() + " not found")
                 )
         );
 
         try {
-            if (credentialsService.validateCredentials(userId, request.password())) {
+            if (credentialsService.validateCredentials(userId, new Password(request.password()))) {
                 String opaqueId = OpaqueTokenGenerator.generateOpaqueToken();
                 cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 5, TimeUnit.MINUTES);
                 return Optional.of(opaqueId);
@@ -63,8 +71,8 @@ public class BasicAuthService {
     }
 
     public String register(BasicAuthRegisterRequest request) throws AlreadyExistException {
-        UserId userId = userService.createUser(request.email(), request.username());
-        credentialsService.createCredentials(userId, request.password());
+        UserId userId = userService.createUser(new Email(request.email()), new Username(request.username()));
+        credentialsService.createCredentials(userId, new Password(request.password()));
         String opaqueId = OpaqueTokenGenerator.generateOpaqueToken();
         cache.put(CachingOption.OPAQUE_TOKEN_TO_UID, opaqueId, userId.value().toString(), 5, TimeUnit.MINUTES);
         return opaqueId;
@@ -72,7 +80,7 @@ public class BasicAuthService {
 
     public void findEmailAndCache(Email email) throws NotFoundException {
         UserId userId = userService.findUserByEmail(email).orElseThrow(
-                () -> new NotFoundException("USER_NOT_FOUND", "User with email " + email + " not found")
+                () -> new NotFoundException("USER_NOT_FOUND", "User with email " + email.value() + " not found")
         );
         cache.put(CachingOption.USER_EMAIL_TO_ID, email.value(), userId.value().toString(), 10,TimeUnit.MINUTES);
     }

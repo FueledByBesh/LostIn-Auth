@@ -1,4 +1,4 @@
-package com.lostin.auth.util.validator;
+package com.lostin.auth.util.validation;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

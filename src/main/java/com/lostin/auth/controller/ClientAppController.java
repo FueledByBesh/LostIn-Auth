@@ -51,7 +51,7 @@ public class ClientAppController {
     }
 
     /**
-     * check if secret is valid, because server won't save secret in database only hash
+     * check if secret is valid, because server won't save secret in database hash only
      */
     @PostMapping("/check-secret")
     public ResponseEntity<String> checkSecret(){

@@ -2,7 +2,9 @@ package com.lostin.auth.external_api;
 
 import com.lostin.auth.exception.AlreadyExistException;
 import com.lostin.auth.exception.BadRequestException;
+import com.lostin.auth.model.core.user.Email;
 import com.lostin.auth.model.core.user.UserId;
+import com.lostin.auth.model.core.user.Username;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,13 +18,18 @@ TODO: to use @FeignClient from springframework.cloud to avoid boilerplate code
 public class LostInUsersApi {
 
     //todo
-    public UserId createUser(String email, String username) throws AlreadyExistException, BadRequestException {
-        return UserId.validated(UUID.randomUUID());
+    public UserId createUser(Email email, Username username) throws AlreadyExistException, BadRequestException {
+        return new UserId(UUID.randomUUID());
+    }
+
+    //todo
+    public boolean isEmailTaken(Email email) {
+        return false;
     }
 
     //todo
     public Optional<UserId> findUserByEmail(String email){
-        return Optional.of(UserId.validated(UUID.randomUUID()));
+        return Optional.of(new UserId(UUID.randomUUID()));
     }
 
 

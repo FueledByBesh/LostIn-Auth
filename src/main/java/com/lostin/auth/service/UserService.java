@@ -22,7 +22,7 @@ public class UserService {
 
     public UserId createUser(Email email, Username username) throws AlreadyExistException {
         try {
-            return usersApi.createUser(email.value(), username.value());
+            return usersApi.createUser(email, username);
         }catch (BadRequestException e){
             log.error(
                     "UNEXPECTED ERROR! Assumptions: " +
@@ -35,6 +35,10 @@ public class UserService {
 
     public Optional<UserId> findUserByEmail(Email email) {
         return usersApi.findUserByEmail(email.value());
+    }
+
+    public boolean isEmailTaken(Email email) {
+        return usersApi.isEmailTaken(email);
     }
 
 }
