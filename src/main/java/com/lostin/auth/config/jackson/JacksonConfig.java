@@ -1,4 +1,4 @@
-package com.lostin.auth.config.beans;
+package com.lostin.auth.config.jackson;
 
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;

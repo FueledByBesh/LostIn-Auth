@@ -2,9 +2,13 @@ package com.lostin.auth.exception;
 
 import com.lostin.auth.request_response.ErrorResponse;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+
+import java.util.Objects;
+
+@Slf4j
 @Getter
-//@SuperBuilder
 public class ServerError extends RuntimeException {
 
     String error;
@@ -34,4 +38,15 @@ public class ServerError extends RuntimeException {
         return new ErrorResponse(error,message);
     }
 
+    public static <T extends ServerError> T from(ErrorResponse errorResponse, Class<T> clazz){
+        try {
+            if(Objects.isNull(errorResponse)){
+                return clazz.getDeclaredConstructor().newInstance();
+            }
+            return clazz.getDeclaredConstructor(String.class,String.class).newInstance(errorResponse.error(),errorResponse.message());
+        } catch (Exception e) {
+            log.error("Error creating exception from error response",e);
+            throw new ServerError();
+        }
+    }
 }

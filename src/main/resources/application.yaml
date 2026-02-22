@@ -11,8 +11,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 3000
+            readTimeout: 5000
+            logger-level: full
 
   profiles:
     active: dev
@@ -24,3 +33,6 @@ spring:
 #      password: ${REDIS_PASSWORD}
 server:
   port: 8080
+
+users-service:
+  url: http://localhost:8081

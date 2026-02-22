@@ -1,4 +1,4 @@
-package com.lostin.auth.config.beans;
+package com.lostin.auth.config.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

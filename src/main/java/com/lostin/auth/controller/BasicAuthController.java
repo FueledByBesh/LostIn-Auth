@@ -23,7 +23,7 @@ import java.util.Optional;
 
 
 /**
-For internal services use only, not for all clients (They will use OAuth via client id and client secret).
+ * For internal services use only, not for all clients (They will use OAuth via client id and client secret).
  */
 
 @Slf4j
@@ -62,13 +62,9 @@ public class BasicAuthController {
     public ResponseEntity<BasicAuthRegisterResponse> registerUser(
             @Valid @RequestBody BasicAuthRegisterRequest request
     ) {
-        try {
-            String token = basicAuthService.register(request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new BasicAuthRegisterResponse(token));
-        } catch (AlreadyExistException e) {
-            throw new ConflictException(e.getError(), e.getMessage());
-        }
+        String token = basicAuthService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new BasicAuthRegisterResponse(token));
     }
 
     @PostMapping("/logout")
@@ -85,7 +81,6 @@ public class BasicAuthController {
     public ResponseEntity<Void> isEmailAvailable(
             @Valid @RequestBody EmailRequest request
     ) {
-
         if (basicAuthService.isEmailAvailable(new Email(request.email()))) {
             return ResponseEntity.ok().build();
         }

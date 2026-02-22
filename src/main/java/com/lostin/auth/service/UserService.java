@@ -1,9 +1,12 @@
 package com.lostin.auth.service;
 
-import com.lostin.auth.exception.AlreadyExistException;
-import com.lostin.auth.exception.BadRequestException;
-import com.lostin.auth.exception.ServerError;
-import com.lostin.auth.external_api.LostInUsersApi;
+import com.lostin.auth.client_api.users.request.CreateUserRequest;
+import com.lostin.auth.client_api.users.request.EmailRequest;
+import com.lostin.auth.client_api.users.request.GetUserProfileRequest;
+import com.lostin.auth.client_api.users.request.GetUserProfilesRequest;
+import com.lostin.auth.dto.users_client.UserMinimalProfile;
+import com.lostin.auth.exception.*;
+import com.lostin.auth.client_api.users.UsersClient;
 import com.lostin.auth.model.core.user.Email;
 import com.lostin.auth.model.core.user.UserId;
 import com.lostin.auth.model.core.user.Username;
@@ -11,34 +14,42 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
-    private final LostInUsersApi usersApi;
+    private final UsersClient usersClient;
 
-    public UserId createUser(Email email, Username username) throws AlreadyExistException {
-        try {
-            return usersApi.createUser(email, username);
-        }catch (BadRequestException e){
-            log.error(
-                    "UNEXPECTED ERROR! Assumptions: " +
-                            "1) Auth server parameter validation do not satisfy to User server validation" +
-                            "2) Used wrong User server endpoint",
-                    e);
-            throw new ServerError();
-        }
+    public UserId createUser(Email email, Username username) throws ConflictException {
+        return new UserId(
+                usersClient.createUser(new CreateUserRequest(email.value(), username.value())).userId()
+        );
     }
 
-    public Optional<UserId> findUserByEmail(Email email) {
-        return usersApi.findUserByEmail(email.value());
+    public UserId findUserByEmail(Email email) throws NotFoundException {
+        return new UserId(
+            usersClient.findUserByEmail(new EmailRequest(email.value())).userId()
+        );
     }
 
     public boolean isEmailTaken(Email email) {
-        return usersApi.isEmailTaken(email);
+        return usersClient.isEmailTaken(new EmailRequest(email.value()));
+    }
+
+    public UserMinimalProfile getUserProfile(UserId userId) throws NotFoundException {
+        return usersClient.getUserProfile(new GetUserProfileRequest(userId.value()));
+    }
+
+    /**
+     * @param userIds list of user ids
+     * @return list of {@link UserMinimalProfile} objects,
+     * if no user found returns an empty list
+     */
+    public List<UserMinimalProfile> getUserProfilesByIds(List<UserId> userIds) {
+        return usersClient.getProfilesByIds(new GetUserProfilesRequest(userIds.stream().map(UserId::value).toList()));
     }
 
 }

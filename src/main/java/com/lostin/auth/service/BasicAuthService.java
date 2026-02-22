@@ -1,10 +1,7 @@
 package com.lostin.auth.service;
 
-
-import com.lostin.auth.exception.AlreadyExistException;
-import com.lostin.auth.exception.NotFoundException;
-import com.lostin.auth.exception.ServerError;
-import com.lostin.auth.exception.ValidationException;
+import com.lostin.auth.dto.users_client.UserMinimalProfile;
+import com.lostin.auth.exception.*;
 import com.lostin.auth.model.core.user.Email;
 import com.lostin.auth.model.core.user.Password;
 import com.lostin.auth.model.core.user.UserId;
@@ -18,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +27,6 @@ public class BasicAuthService {
     private final UserService userService;
     private final UserCredentialsService credentialsService;
     private final Cache cache;
-
 
     /**
      *
@@ -51,9 +48,7 @@ public class BasicAuthService {
             optionalUserId = Optional.empty();
         }
         userId = optionalUserId.orElseGet(
-                () -> userService.findUserByEmail(new Email(request.email())).orElseThrow(
-                        () -> new NotFoundException("USER_NOT_FOUND", "User with email " + request.email() + " not found")
-                )
+                () -> userService.findUserByEmail(new Email(request.email()))
         );
 
         try {
@@ -70,7 +65,7 @@ public class BasicAuthService {
 
     }
 
-    public String register(BasicAuthRegisterRequest request) throws AlreadyExistException {
+    public String register(BasicAuthRegisterRequest request) throws ConflictException {
         UserId userId = userService.createUser(new Email(request.email()), new Username(request.username()));
         credentialsService.createCredentials(userId, new Password(request.password()));
         String opaqueId = OpaqueTokenGenerator.generateOpaqueToken();
@@ -79,9 +74,7 @@ public class BasicAuthService {
     }
 
     public void findEmailAndCache(Email email) throws NotFoundException {
-        UserId userId = userService.findUserByEmail(email).orElseThrow(
-                () -> new NotFoundException("USER_NOT_FOUND", "User with email " + email.value() + " not found")
-        );
+        UserId userId = userService.findUserByEmail(email);
         cache.put(CachingOption.USER_EMAIL_TO_ID, email.value(), userId.value().toString(), 10,TimeUnit.MINUTES);
     }
 
@@ -89,9 +82,9 @@ public class BasicAuthService {
      * @param email email that should be checked
      * @return true if email not taken, otherwise false
      */
-    //todo: use isEmailTaken endpoint in Users Service
+    //done: use isEmailTaken endpoint in Users Service
     public boolean isEmailAvailable(Email email) {
-        return userService.findUserByEmail(email).isEmpty();
+        return !userService.isEmailTaken(email);
     }
 
 }

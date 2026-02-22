@@ -414,9 +414,9 @@
                 const response = await fetch("/api/v1/auth/register/email-available", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "text/plain"
+                        "Content-Type": "application/json"
                     },
-                    body: email
+                    body: JSON.stringify({email: email.toString()})
                 });
 
                 if (response.ok) {

@@ -19,6 +19,7 @@ import java.util.UUID;
 public class OAuthFlowService {
 
     private final OAuthFlowRepository flowRepository;
+    private final UserService userService;
 
     public void saveUserIntoFlow(@NonNull UUID flowId, UserId userId) throws NotFoundException{
         CachedFlow flow = flowRepository.getCachedFlow(flowId).orElseThrow(

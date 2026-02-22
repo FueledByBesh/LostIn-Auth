@@ -48,18 +48,30 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<@NonNull ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
+        log.debug("Validation error", e);
         return ResponseEntity.badRequest().body(new ErrorResponse("VALIDATION_ERROR", "Invalid inputs!"));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<@NonNull ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.debug("Validation error", e);
         return ResponseEntity.badRequest().body(new ErrorResponse("VALIDATION_ERROR", "Invalid inputs!"));
     }
 
     @ExceptionHandler(ServerError.class)
     public ResponseEntity<@NonNull ErrorResponse> handleServerError(ServerError e) {
         log.error("Internal Server Error", e);
-        return ResponseEntity.status(500).body(e.toErrorResponse());
+        return ResponseEntity.status(500).build();
+    }
+
+    @ExceptionHandler(InternalBadRequestException.class)
+    public ResponseEntity<@NonNull ErrorResponse> handleBadRequestException(InternalBadRequestException e) {
+        log.error(
+                "UNEXPECTED ERROR! Assumptions: " +
+                        "1) Auth server parameter validation do not satisfy to User server validation" +
+                        "2) Used wrong User server endpoint",
+                e);
+        return this.handleServerError(e);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
