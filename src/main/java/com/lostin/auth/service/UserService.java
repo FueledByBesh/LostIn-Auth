@@ -25,13 +25,13 @@ public class UserService {
 
     public UserId createUser(Email email, Username username) throws ConflictException {
         return new UserId(
-                usersClient.createUser(new CreateUserRequest(email.value(), username.value())).userId()
+                usersClient.createUser(new CreateUserRequest(email.value(), username.value())).user_id()
         );
     }
 
     public UserId findUserByEmail(Email email) throws NotFoundException {
         return new UserId(
-            usersClient.findUserByEmail(new EmailRequest(email.value())).userId()
+            usersClient.findUserByEmail(new EmailRequest(email.value())).user_id()
         );
     }
 

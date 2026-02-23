@@ -1,6 +1,5 @@
 package com.lostin.auth.service;
 
-import com.lostin.auth.dto.users_client.UserMinimalProfile;
 import com.lostin.auth.exception.*;
 import com.lostin.auth.model.core.user.Email;
 import com.lostin.auth.model.core.user.Password;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 

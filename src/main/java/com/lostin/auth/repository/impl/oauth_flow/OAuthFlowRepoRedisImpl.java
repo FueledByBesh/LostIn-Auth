@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Qualifier("redis-impl")
 public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
 
-    private final RedisTemplate<String,Object> redisTemplate;
+    private final RedisTemplate<String,CachedFlow> redisTemplate;
     private final String FLOW_PREFIX = "flow:";
 
     /**
@@ -41,7 +41,7 @@ public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
 
     @Override
     public void saveFlow(CachedFlow flow) {
-        redisTemplate.opsForValue().set(flow.getFlowId().toString(),flow, 10, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(FLOW_PREFIX+flow.getFlowId(),flow, 10, TimeUnit.MINUTES);
     }
 
     @Override
@@ -51,8 +51,8 @@ public class OAuthFlowRepoRedisImpl implements OAuthFlowRepository {
 
     @Override
     public Optional<CachedFlow> getCachedFlow(UUID flowId) {
-        redisTemplate.opsForValue().get(FLOW_PREFIX+flowId);
-        return Optional.empty();
+        CachedFlow flow = redisTemplate.opsForValue().get(FLOW_PREFIX + flowId);
+        return Optional.ofNullable(flow);
     }
 
     @Override

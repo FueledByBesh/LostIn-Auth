@@ -112,7 +112,7 @@ public class OAuthFlowController {
         if(optionalUid.isEmpty()) {
             return "redirect:" +
                     APP_BASE_URL +
-                    "/auth/v1/sign-in/error-page";
+                    "/auth/v1/sign-in/error-page?cause=invalid-token";
         }
 
         UserId userId = UserId.from(optionalUid.get());
@@ -123,7 +123,7 @@ public class OAuthFlowController {
         }catch (NotFoundException e){
             return "redirect:" +
                     APP_BASE_URL +
-                    "/auth/v1/sign-in/error-page";
+                    "/auth/v1/sign-in/error-page?cause=flow-not-found";
         }
         if(rememberMe) {
             UUID sessionId = sessionService.saveSession(userId);

@@ -4,14 +4,12 @@ import com.lostin.auth.client_api.users.request.CreateUserRequest;
 import com.lostin.auth.client_api.users.request.EmailRequest;
 import com.lostin.auth.client_api.users.request.GetUserProfileRequest;
 import com.lostin.auth.client_api.users.request.GetUserProfilesRequest;
-import com.lostin.auth.client_api.users.response.EmailTakenResponse;
 import com.lostin.auth.client_api.users.response.UserIdResponse;
 import com.lostin.auth.config.feign.UsersFeignConfig;
 import com.lostin.auth.dto.users_client.UserMinimalProfile;
 import com.lostin.auth.exception.ConflictException;
 import com.lostin.auth.exception.InternalBadRequestException;
 import com.lostin.auth.exception.NotFoundException;
-import com.lostin.auth.model.core.user.UserId;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
